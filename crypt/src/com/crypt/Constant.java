@@ -3,7 +3,7 @@ package com.crypt;
 public class Constant 
 {
 	// Camera view screen height
-	public final static int SCREEN_HEIGHT = 768;
+	public final static float SCREEN_HEIGHT = 768;
 	
 	// Number of rows always required on screen
 	public final static int NUM_ROWS = 12;

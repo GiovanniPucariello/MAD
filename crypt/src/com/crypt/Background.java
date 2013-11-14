@@ -4,36 +4,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.crypt.Constant.BLOCK;
 
 public class Background 
 {
+	// LevelMap
+	private LevelMap levelMap;
+	
 	// Images of Blocks
 	private TextureRegion blocks [];
 	
-	// The overall size of the screen in pixels
-	private float screenWidth;
-	
-	// size of the screen in cells / blocks
-	private float screenWidthBlocks;
-
-	// size of each cell block
-	private int blockSize;
-	
-	// map class for grid layout
-	private Grid map;
-
-	// starting column to render the current background from
-	private int startCol;
-	// the pixel offset from the first column to render the current background from
-	private float colOffset;
-	// the offset that is required to render the last block at the far right hand side of the screen
-	private float finalOffset;
-	
-	Background(float width, float height)
+	Background(LevelMap levelMap)
 	{
-		// Create the map grid
-		map = new Grid();
+		this.levelMap = levelMap;
 		
 		// Create texture regions
 		blocks = new TextureRegion[Constant.NUM_MAP_BLOCKS];
@@ -45,83 +29,49 @@ public class Background
 			// get file form disk based upon the constant defined
 			blocks[i] = new TextureRegion(new Texture(Gdx.files.internal(blockpaths.getfilename())));
 			i++;
-		}
-				
-		screenWidth = width;
-						
-		// calculate the screen width in blocks based upon the size of the blocks
-		blockSize = Constant.BLOCK_SIZE; // blocks[0].getRegionWidth(); 
-		screenWidthBlocks = (width / blockSize);
-		
-		// screenWidthBlock could be a decimal and we need next whole numbers
-		if (screenWidthBlocks != (int)screenWidthBlocks) 
-		{
-			finalOffset = (screenWidthBlocks - (int)screenWidthBlocks) * blockSize;
-			screenWidthBlocks=(int) screenWidthBlocks++;
-		}
-		System.out.println("screenWidthBlocks :"+screenWidthBlocks);
+		}		
 	}
 	
-	/* Sets the x position for the centre of screen of the grid
-	 */
-	void setXPos(float x)
+	void draw(SpriteBatch batch, Rectangle viewport)
 	{
-		//TODO need to revisit this method and thing about what happens if the grid is shorter than the screen width
+		// adjust the X and Y positions to start of the nearest block - modules of BLOCK_SIZE pixels
+		float renderXPos = viewport.x - (viewport.x % Constant.BLOCK_SIZE);
+		float renderYPos = viewport.y - (viewport.y % Constant.BLOCK_SIZE);
 		
-		// check if the x position is less than the centre of the screen
-		if (x < screenWidth / 2) 
-		{
-			x = 0;
-		} else
-		{
-			x = x - (screenWidth / 2);
-		}
+		// convert the X and Y position to which rows and columns of the map - modules of BLOCK_SIZE pixels
+		int startCol = (int) (renderXPos / Constant.BLOCK_SIZE);
+		int startRow = (int) (renderYPos / Constant.BLOCK_SIZE);
+
+		// calculate the last column to render and 1 because there will normally 
+		// be part of a column hang off the screen
+		int lastColumn = (int)(viewport.width / Constant.BLOCK_SIZE) + 2 + startCol;
 		
-		// check x is not beyond half the screen from the end of the map
-		if (x > (map.getMapLength() * blockSize) - (screenWidth/2)) x = (map.getMapLength() * blockSize) - (screenWidth/2);
+		// Deduct a column if lastColumn exceeds the map length
+		if (lastColumn > levelMap.getMapLengthBlocks())
+			lastColumn = levelMap.getMapLengthBlocks();
+		
+		// calculate the last row to render and 1 because there will normally 
+		// be part of a row hang off the screen
+		int lastRow = startRow + Constant.NUM_ROWS + 2;
+		
+		// Deduct a column if lastColumn exceeds the map length
+				if (lastRow > levelMap.getMapHeightBlocks())
+					lastRow = levelMap.getMapHeightBlocks();
 				
-		// calculate the column and pixel offset with the column
-		startCol = (int)(x / blockSize);
-		colOffset = x % blockSize;
-	}
-	
-	float lengthPixels()
-	{
-		return map.getMapLength() * blockSize;
-	}
+		//System.out.println("renderXPos :"+ renderXPos + "; renderYPos :"+ renderYPos + "; startCol :"+ startCol + "; startRow :"+ startRow + "; lastColumn :"+ lastColumn);
 		
-	void draw(SpriteBatch batch)
-	{
-		// calculate the last column to render
-		int lastColumn = (int)screenWidthBlocks + startCol + 1;
-		
-		// if colOffset is not 0 then render and extra column
-		// because the columns are hang off the screen at each end
-		if (colOffset != 0 && lastColumn < map.getMapLength()) 
-		{
-			lastColumn++;
-		} 
-		else if (lastColumn > map.getMapLength())
-		{
-			lastColumn = map.getMapLength();
-			colOffset = -finalOffset;
-		}
-		
-		// adjust the rendering start position 
-		float x = -colOffset;
-		
-		// loop across the map array drawing end cell
+		// loop across the map drawing end cell
 		for(int col = startCol; col < lastColumn; col++)
 		{
-			float y = 0;
-			for (int row = 0; row < Constant.NUM_ROWS; row++)
+			float y = renderYPos;
+			for (int row = startRow; row < lastRow; row++)
 			{
 				// Use the map cell index to reference the array of images
-				batch.draw(blocks[map.Cell(col, row)], x, y);
+				batch.draw(blocks[levelMap.Cell(col, row)], renderXPos, y);
 
-				y += blockSize;
+				y += Constant.BLOCK_SIZE;
 			}
-			x += blockSize;
-		}
+			renderXPos += Constant.BLOCK_SIZE;
+		}		
 	}
 }

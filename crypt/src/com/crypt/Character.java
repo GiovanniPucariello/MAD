@@ -1,41 +1,74 @@
 package com.crypt;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 public class Character 
 {
+	// Characters speed
 	private static int CHAR_SPEED = 200;
 	
+	// Characters velocity 0, 1 or -1
 	private Vector2 velocity;
-	private float xPos;
 	
-	private Background background;
+	// Characters position x,y
+	private Vector2 position;
+		
+	private WorldController world;
+	private LevelMap levelMap;
 	
-	Character(Background background)
+	Character(WorldController world, LevelMap levelMap)
 	{
-		this.background = background;
-		xPos = 0;
+		this.world = world;
+		this.levelMap = levelMap;
 		velocity = new Vector2(0,0);
+		position = new Vector2(640,384);
+	}
+	
+	Vector2 getCharacterPosition()
+	{
+		return position;
 	}
 	
 	void moveRight()
 	{
-		velocity = new Vector2(CHAR_SPEED,0);
+		velocity.x = 1;
 	}
 	
 	void moveLeft()
 	{
-		velocity = new Vector2(-CHAR_SPEED,0);
+		velocity.x = - 1;
 	}
 	
-	void move()
+	void moveUp()
 	{
-		float xMovement = velocity.x * Gdx.graphics.getDeltaTime();
-		xPos += xMovement;
-		if (xPos < (Crypt.screenLength/2)) xPos = Crypt.screenLength/2;
-		if (xPos > background.lengthPixels() - (Crypt.screenLength/2)) xPos = background.lengthPixels() - (Crypt.screenLength/2);
-		background.setXPos(xPos);
+		velocity.y = 1;
+	}
+	
+	void moveDown()
+	{
+		velocity.y = -1;
+	}
+	
+	void stopVerticalMove()
+	{
+		velocity.y = 0;
+	}
+	
+	void stopHoziontialMove()
+	{
+		velocity.x =0;
+	}
+	
+	void update(float deltaTime)
+	{
+		// update the character position by multiplying the velocity vector by time passed and adding it to the position.
+		position.add(velocity.tmp().mul(deltaTime * CHAR_SPEED));
+		
+		// ensure the character is not outside the confines of the Map
+		if (position.x < 0) position.x = 0;
+		if (position.x > levelMap.getMapLengthPixels()) position.x = levelMap.getMapLengthPixels();
+		if (position.y < 0) position.y = 0;
+		if (position.y > levelMap.getMapHeightPixels()) position.y = levelMap.getMapHeightPixels();
 	}
 
 }
