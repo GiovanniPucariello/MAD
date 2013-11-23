@@ -19,6 +19,7 @@ public class WorldRenderer implements Disposable {
 	
 	// Screen viewPort
 	private Rectangle viewPort = new Rectangle(0,0,0,0);
+	private Rectangle backgroundPort = new Rectangle(0,0,0,0);
 		
 	public WorldRenderer (WorldController world) 
 	{
@@ -53,8 +54,7 @@ public class WorldRenderer implements Disposable {
 			
 			// update screen position based on the character
 			updateViewport();
-			// Update camera position ########### do not understand why I need to add half the screen width - please look at it #################
-			// I think that the cameras view point is centred around middle of the screen 
+			// Update camera position view position 
 			camera.position.set(viewPort.x + (viewPort.width / 2), viewPort.y + (viewPort.height / 2), 0);
 			camera.update();
 			
@@ -66,12 +66,14 @@ public class WorldRenderer implements Disposable {
 			batch.disableBlending();
 			
 			// draw background
-			world.background.draw(batch, viewPort);
+			world.background.draw(batch, backgroundPort);
 			
 			// enable blending for other objects in the world
 			batch.enableBlending();
 			
 			// ****** render all other objects here and below ******
+			world.character.draw(batch);
+			
 		batch.end();
 	}
 	
@@ -104,17 +106,6 @@ public class WorldRenderer implements Disposable {
 		float renderYPos = world.getCharacterPosition().y - (Constant.SCREEN_HEIGHT / 2) + (Constant.BLOCK_SIZE /2);
 		
 		// Check if render origin is off screen 
-		if (renderXPos < 0)
-		{
-			// reset it to the edge of the screen
-			renderXPos = 0;
-		} else if (renderXPos + screenWidth > levelMap.getMapLengthPixels()) // check if it is beyond the map length
-		{
-			// reset the view to the far edge of the map
-			renderXPos = levelMap.getMapLengthPixels() - screenWidth;
-		}
-		
-		// Check if render origin is off screen 
 		if (renderYPos < 0) 
 		{
 			// reset it to the edge of the screen
@@ -125,10 +116,47 @@ public class WorldRenderer implements Disposable {
 			renderYPos = levelMap.getMapHeightPixels() - screenHeight;
 		}
 		
-		// Store new ViewPort
-		viewPort.x = renderXPos;
-		viewPort.y = renderYPos;
-		viewPort.width = screenWidth;
-		viewPort.height = screenHeight;
+		// Check if the map is smaller than the width of the viewport
+		if (screenWidth > levelMap.getMapLengthPixels())
+		{
+			// Store new ViewPort
+			viewPort.x = -(screenWidth - levelMap.getMapLengthPixels()) / 2;
+			viewPort.y = renderYPos;
+			viewPort.width = screenWidth;
+			viewPort.height = screenHeight;
+			
+			// Update backgroundPort 
+			backgroundPort.y = viewPort.y;
+			backgroundPort.height = screenHeight;
+			
+			// centre backgroundPort within Viewport
+			backgroundPort.x = viewPort.x + ((screenWidth - levelMap.getMapLengthPixels())/2);
+			backgroundPort.width = levelMap.getMapLengthPixels();
+		} 
+		else
+		{
+			// Check if render origin is off screen 
+			if (renderXPos < 0)
+			{
+				// reset it to the edge of the screen
+				renderXPos = 0;
+			} else if (renderXPos + screenWidth > levelMap.getMapLengthPixels()) // check if it is beyond the map length
+			{
+				// reset the view to the far edge of the map
+				renderXPos = levelMap.getMapLengthPixels() - screenWidth;
+			}
+			
+			// Store new ViewPort
+			viewPort.x = renderXPos;
+			viewPort.y = renderYPos;
+			viewPort.width = screenWidth;
+			viewPort.height = screenHeight;
+			
+			// Update backgroundPort 
+			backgroundPort.y = viewPort.y;
+			backgroundPort.height = screenHeight;
+			backgroundPort.x = viewPort.x;
+			backgroundPort.width = screenWidth;			
+		}		
 	}
 }

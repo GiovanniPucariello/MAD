@@ -38,4 +38,32 @@ public class Constant
 		}
 	}
 	
+	// numeric values for the index of the blocks
+	// MUST BE keep in sync with the BLOCK enum above
+	public static enum BLOCKVALUES
+	{
+		PASSAGE(0),
+		MID(1),
+		COLUMN_LEFT(2),
+		COLUMN_RIGHT(3),
+		END_RIGHT(4),
+		END_LEFT(5),
+		SINGLE(6),
+		
+		TRANSPORT(98),
+		CHAR_START_POINT(99);
+		
+		private final int value;
+		
+		BLOCKVALUES(int value)
+		{
+			this.value = value;
+		}
+		
+		public int getValue()
+		{
+			return value;
+		}
+	}
+	
 }

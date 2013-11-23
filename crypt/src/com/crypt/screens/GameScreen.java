@@ -23,7 +23,7 @@ public class GameScreen implements Screen{
 		// Initialise controller and renderer
 		world = new WorldController();
 		worldRenderer = new WorldRenderer(world);
-		
+		world.init();
 	}
 	
 	@Override

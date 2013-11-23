@@ -1,8 +1,14 @@
 package com.crypt;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Character 
+public class Character
 {
 	// Characters speed
 	private static int CHAR_SPEED = 200;
@@ -12,16 +18,67 @@ public class Character
 	
 	// Characters position x,y
 	private Vector2 position;
-		
+	
+	// position moving to to be tested with map
+	private Vector2 movement;
+	
+	// Object references
 	private WorldController world;
 	private LevelMap levelMap;
 	
-	Character(WorldController world, LevelMap levelMap)
+	// boundary of character
+	private Rectangle bounds;
+
+	// frame to render
+	private TextureRegion currentFrame;
+	
+	// State Time
+	float stateTime = 0f;
+	
+	// sounds
+	private Sound transportsound;
+	
+	// animation class
+	private Animation[] animation = new Animation[5];
+	
+	// animation indexes
+	private int up = 0;
+	private int down = 1;
+	private int right = 2; 
+	private int left = 3;
+	private int stood = 4;
+	private int imageSet = 0;
+	
+	Character(WorldController world, LevelMap levelMap, Animation[] animation)
 	{
 		this.world = world;
 		this.levelMap = levelMap;
+		
+		this.animation = animation;
+		
+		// Transport sound
+		transportsound = Gdx.audio.newSound(Gdx.files.internal("data/Trans3.mp3"));
+		
+		// initialise vector and bounds
+		movement = new Vector2(0,0);
 		velocity = new Vector2(0,0);
-		position = new Vector2(640,384);
+		position = new Vector2(0,0);
+		
+		// initialise stateTime
+		stateTime = 0f;
+		
+		// It been necessary to reduce the size by 3 pixels to prevent it moving pass opening in a single frame update
+		// if further works required to this then see LevelMap - canIMove method (needs to check for openings between start and moved to position.
+		bounds = new Rectangle(0,0, this.animation[0].getKeyFrame(0f).getRegionWidth()-3,this.animation[0].getKeyFrame(0f).getRegionHeight()-3);
+	}
+	
+	public void init()
+	{
+		// get start position from map
+		position.set(levelMap.getCharStartPoint());
+		// set bounds position to position
+		bounds.x = position.x;
+		bounds.y = position.y;
 	}
 	
 	Vector2 getCharacterPosition()
@@ -61,14 +118,52 @@ public class Character
 	
 	void update(float deltaTime)
 	{
-		// update the character position by multiplying the velocity vector by time passed and adding it to the position.
-		position.add(velocity.tmp().mul(deltaTime * CHAR_SPEED));
+		// update statetime
+		stateTime += deltaTime;
 		
-		// ensure the character is not outside the confines of the Map
-		if (position.x < 0) position.x = 0;
-		if (position.x > levelMap.getMapLengthPixels()) position.x = levelMap.getMapLengthPixels();
-		if (position.y < 0) position.y = 0;
-		if (position.y > levelMap.getMapHeightPixels()) position.y = levelMap.getMapHeightPixels();
+		// calculate the movement by multiplying the velocity vector by time passed to get the movement
+		movement.set(velocity.tmp().mul(deltaTime * CHAR_SPEED));
+		
+		// check and validate movement
+		levelMap.canIMove(bounds, movement);
+		
+		// check if character should be transported.
+		if (levelMap.transportMe(bounds, movement) == true)
+		{
+			transportsound.play();
+		}
+		
+		// update character position to bounds position
+		position.x = bounds.x;
+		position.y = bounds.y;		
 	}
-
+	
+	void draw(SpriteBatch batch)
+	{
+		// Set image set to reflex movement
+		if (movement.y > 0)
+		{
+			imageSet = up;
+		}
+		else if (movement.y < 0)
+		{
+			imageSet = down;
+		}
+		else if (movement.x > 1)
+		{
+			imageSet = right;
+		}
+		else if (movement.x < -1)
+		{
+			imageSet = left;
+		}
+		else
+			imageSet = stood;
+		
+		// pick correct frame
+		currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
+		
+		// draw image
+		batch.draw(currentFrame, position.x, position.y);
+	}
 }
