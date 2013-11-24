@@ -4,15 +4,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class WorldController implements InputProcessor
 {
+	// Screen viewPort
+	private Rectangle viewPort = new Rectangle(0,0,0,0);
+	
 	// world objects
 	public Background background;
 	private LevelMap levelMap;
 	private Assets assets;
 	public Character character;
+	private WorldRenderer renderer;
 	
 	public WorldController() 
 	{
@@ -36,6 +41,18 @@ public class WorldController implements InputProcessor
 	public void update (float deltaTime) 
 	{
 		// check for Accelerometer
+		handleAccelerometer();
+		
+		// call all world objects to update themselves
+		character.update(deltaTime);
+		
+		// update the screen area to be rendered
+		viewPort = renderer.updateViewport();
+		
+		// update all other objects below here
+	}
+
+	private void handleAccelerometer() {
 		if (Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer))
 		{
 			float adjustedMovement = (Gdx.input.getAccelerometerY());
@@ -67,11 +84,24 @@ public class WorldController implements InputProcessor
 				character.stopVerticalMove();
 			}
 		}
-		
-		// call all world objects to update themselves
-		character.update(deltaTime);
-		
-		// update all other objects below here
+	}
+	
+	/**
+	 * 
+	 * @param x bottom left of character position
+	 * @param y bottom left of character position
+	 */
+	public void addbullet(float x , float y)
+	{
+		// Call bulletRegister class from here and add bullet
+		if (x > Gdx.graphics.getWidth() /2)
+		{
+				System.out.println("firing right");
+		} 
+		else
+		{
+				System.out.println("firing left");
+		}
 	}
 	
 	public Vector2 getCharacterPosition()
@@ -113,6 +143,12 @@ public class WorldController implements InputProcessor
 			levelMap.setLevel(2);
 			character.init();
 			break;
+		case Keys.X:
+			addbullet(Gdx.graphics.getWidth() /2 +100, 0);
+			break;
+		case Keys.Z:
+			addbullet(Gdx.graphics.getWidth() /2 -100, 0);
+			break;
 		}
 		return true;
 	}
@@ -143,8 +179,10 @@ public class WorldController implements InputProcessor
 	}
 
 	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		return false;
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) 
+	{
+		addbullet(screenX, screenY);
+		return true;
 	}
 
 	@Override
@@ -165,5 +203,10 @@ public class WorldController implements InputProcessor
 	@Override
 	public boolean scrolled(int amount) {
 		return false;
+	}
+
+	public void setRender(WorldRenderer renderer) {
+		this.renderer = renderer;
+		
 	}
 }

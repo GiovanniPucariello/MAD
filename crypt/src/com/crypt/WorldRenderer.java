@@ -52,8 +52,8 @@ public class WorldRenderer implements Disposable {
 	    // begin batch
 		batch.begin();
 			
-			// update screen position based on the character
-			updateViewport();
+			/*// update screen position based on the character
+			updateViewport();*/
 			// Update camera position view position 
 			camera.position.set(viewPort.x + (viewPort.width / 2), viewPort.y + (viewPort.height / 2), 0);
 			camera.update();
@@ -94,9 +94,18 @@ public class WorldRenderer implements Disposable {
 		batch.dispose();
 	}
 	
+	public float getscreenWidth()
+	{
+		return screenWidth;
+	}
+	
+	public float getscreenHeight()
+	{
+		return screenHeight;
+	}
 	
 	// Calculates the ViewPort size and position based upon the characters position
-	private void updateViewport()
+	public Rectangle updateViewport()
 	{
 		// calculate bottom corner of viewport based upon the characters position
 		// Characters position - half the screen size + half a block because the characters position
@@ -157,6 +166,8 @@ public class WorldRenderer implements Disposable {
 			backgroundPort.height = screenHeight;
 			backgroundPort.x = viewPort.x;
 			backgroundPort.width = screenWidth;			
-		}		
+		}
+		
+		return viewPort;
 	}
 }

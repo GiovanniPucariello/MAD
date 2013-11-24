@@ -13,13 +13,17 @@ public class Character
 	// Characters speed
 	private static int CHAR_SPEED = 200;
 	
+	// Transport speed
+	private static int TRANS_SPEED = 1000;
+	
 	// Characters velocity 0, 1 or -1
 	private Vector2 velocity;
+	private Vector2 transVelocity = new Vector2(0,0);
 	
 	// Characters position x,y
 	private Vector2 position;
 	
-	// position moving to to be tested with map
+	// amount of movement to to be tested with map
 	private Vector2 movement;
 	
 	// Object references
@@ -28,6 +32,11 @@ public class Character
 	
 	// boundary of character
 	private Rectangle bounds;
+	private Rectangle transbounds = new Rectangle(0,0,0,0);
+	
+	// players state
+	private boolean hit = false;
+	private boolean transporting = false;
 
 	// frame to render
 	private TextureRegion currentFrame;
@@ -120,50 +129,82 @@ public class Character
 	{
 		// update statetime
 		stateTime += deltaTime;
-		
-		// calculate the movement by multiplying the velocity vector by time passed to get the movement
-		movement.set(velocity.tmp().mul(deltaTime * CHAR_SPEED));
-		
-		// check and validate movement
-		levelMap.canIMove(bounds, movement);
-		
-		// check if character should be transported.
-		if (levelMap.transportMe(bounds, movement) == true)
+		if (!transporting) 
 		{
-			transportsound.play();
+			// calculate the movement by multiplying the velocity vector by time passed to get the movement
+			movement.set(velocity.tmp().mul(deltaTime * CHAR_SPEED));
+			// check if character should be transported.
+			transbounds.set(bounds);
+			if (levelMap.transportMe(transbounds, movement) == true) 
+			{
+				System.out.println("character position "+bounds.x+","+bounds.y);
+				
+				System.out.println("transport position "+transbounds.x+","+transbounds.y);
+				// start transport
+				transporting = true;
+				if (transbounds.y > bounds.y)
+				{
+					transVelocity.y = 1;
+				}
+				else
+				{
+					transVelocity.y = -1;
+				}
+			}
+			// check and validate movement
+			levelMap.canIMove(bounds, movement);
 		}
-		
+		else
+		{
+			// calculate the movement by multiplying the velocity vector by time passed to get the movement
+			movement.set(transVelocity.tmp().mul(deltaTime * TRANS_SPEED));
+			
+			// update transport position
+			bounds.x += movement.x;
+			bounds.y += movement.y;
+
+			// check direction of travel & check if arrived at the destination
+			if (transVelocity.y > 0 && bounds.y > transbounds.y)
+			{
+				bounds.x = transbounds.x;
+				bounds.y = transbounds.y;
+				transporting = false;
+
+				transportsound.play();
+			}
+			else if (transVelocity.y < 0 && bounds.y < transbounds.y)
+			{
+				bounds.x = transbounds.x;
+				bounds.y = transbounds.y;
+				transporting = false;
+
+				transportsound.play();
+			}
+		}
 		// update character position to bounds position
 		position.x = bounds.x;
-		position.y = bounds.y;		
+		position.y = bounds.y;
 	}
 	
 	void draw(SpriteBatch batch)
 	{
-		// Set image set to reflex movement
-		if (movement.y > 0)
+		if (!transporting) 
 		{
-			imageSet = up;
+			// Set image set to reflex movement
+			if (movement.y > 0) {
+				imageSet = up;
+			} else if (movement.y < 0) {
+				imageSet = down;
+			} else if (movement.x > 1) {
+				imageSet = right;
+			} else if (movement.x < -1) {
+				imageSet = left;
+			} else
+				imageSet = stood;
+			// pick correct frame
+			currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
+			// draw image
+			batch.draw(currentFrame, position.x, position.y);
 		}
-		else if (movement.y < 0)
-		{
-			imageSet = down;
-		}
-		else if (movement.x > 1)
-		{
-			imageSet = right;
-		}
-		else if (movement.x < -1)
-		{
-			imageSet = left;
-		}
-		else
-			imageSet = stood;
-		
-		// pick correct frame
-		currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
-		
-		// draw image
-		batch.draw(currentFrame, position.x, position.y);
 	}
 }

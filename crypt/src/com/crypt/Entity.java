@@ -20,6 +20,9 @@ public abstract class Entity
 	// flag to hit
 	protected boolean hit;
 	
+	// flag on screen
+	protected boolean onScreen;
+	
 	// reference to level map
 	protected LevelMap levelMap;
 	
@@ -33,6 +36,9 @@ public abstract class Entity
 	
 	// statetime used to calculate the correct image to display
 	private float stateTime;
+	
+	// time entity has been off screen
+	protected float offScreenTimer;
 	
 	// animation collection indexed as shown below
 	private Animation[] animation = new Animation[4];
@@ -58,7 +64,7 @@ public abstract class Entity
 		bounds.height = animation[0].getKeyFrame(0f).getRegionWidth() - 3;
 	}
 	
-	public void update(float deltaTime)
+	public void update(float deltaTime, Rectangle Viewport)
 	{
 		// update statetime
 		stateTime += deltaTime;
@@ -74,42 +80,54 @@ public abstract class Entity
 			{
 				changeDirection();
 			}
-		}	
+		}
+		// check if on screen
+		if (!Viewport.contains(bounds))
+		{
+			onScreen = false;
+			offScreenTimer += deltaTime;
+		}
+		else
+		{
+			onScreen = true;
+			offScreenTimer = 0f;
+		}
 	}
 	
-	private void changeDirection() {
+	protected void changeDirection() {
 		// override this method with logic for a change of direction.
 		// complete vector to movement to see in which direction it was moving
 		// and no longer travel.  levelMap.canIMove can be use to try a new direction.
 		
 	}
+	
+	protected boolean removeFromGame()
+	{
+		if (offScreenTimer > 5000) return true;
+		return false;
+	}
+	
 
 	void draw(SpriteBatch batch)
 	{
-		imageSet = up;
-		// Set image set to reflect movement
-		if (movement.y > 0)
+		if (onScreen) 
 		{
 			imageSet = up;
+			// Set image set to reflect movement
+			if (movement.y > 0) {
+				imageSet = up;
+			} else if (movement.y < 0) {
+				imageSet = down;
+			} else if (movement.x > 1) {
+				imageSet = right;
+			} else if (movement.x < -1) {
+				imageSet = left;
+			}
+			// pick correct frame
+			currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
+			// draw image
+			batch.draw(currentFrame, bounds.x, bounds.y);
 		}
-		else if (movement.y < 0)
-		{
-			imageSet = down;
-		}
-		else if (movement.x > 1)
-		{
-			imageSet = right;
-		}
-		else if (movement.x < -1)
-		{
-			imageSet = left;
-		}
-				
-		// pick correct frame
-		currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
-		
-		// draw image
-		batch.draw(currentFrame, bounds.x, bounds.y);
 	}
 	
 	public boolean collision(Rectangle item)

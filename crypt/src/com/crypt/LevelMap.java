@@ -23,9 +23,12 @@ public class LevelMap
 	// the number of levels load
 	private int numberLevels = -1;
 	
-	// length of map (maximum level is 50)
+	// dimensions of map (maximum level is 50)
 	private int[] mapLength = new int[50];
 	private int[] mapHeigth = new int[50];
+	
+	// map difficulty
+	private int[] mapDifficulty = new int[50];
 	
 	// character start position
 	private Vector2[] charStartPoint = new Vector2[50];
@@ -57,6 +60,9 @@ public class LevelMap
 				// get number of rows
 				mapHeigth[numberLevels] = Integer.valueOf(token.nextToken());
 				mapHeigth[numberLevels]--;
+				
+				// get level difficulty
+				mapDifficulty[numberLevels] = Integer.valueOf(token.nextToken());
 				
 				// create the map storage to the size of the map
 				createMap(mapLength[numberLevels]+1,mapHeigth[numberLevels]+1);
@@ -164,6 +170,11 @@ public class LevelMap
 	int getMapHeightBlocks()
 	{
 		return mapHeigth[thisLevel];
+	}
+	
+	public int getDifficulty()
+	{
+		return mapDifficulty[thisLevel];
 	}
 	
 	float getMapLengthPixels()
@@ -324,26 +335,29 @@ public class LevelMap
 			// check character within the blocks boundaries
 			if (blockbounds.contains(bounds))
 			{
-				// check direction character was moving and direction to look for landing site
-				int direction;
-				if (movement.y > 0 ) direction = 1; else direction = -1;
-				
-				// check vertically for the next transport site
-				yblock += direction;
-				while (level.get(thisLevel).get(xblock).get(yblock) != Constant.BLOCKVALUES.TRANSPORT.getValue())
+				// check the character has a direction
+				if (movement.y !=0)
 				{
+					// check direction character was moving and direction to look for landing site
+					int direction;
+					if (movement.y > 0) direction = 1; else direction = -1;
+					// check vertically for the next transport site
 					yblock += direction;
-					if (yblock > mapHeigth[thisLevel] -1) yblock =0;
-					if (yblock < 0) yblock = mapHeigth[thisLevel] -1;
+					while (level.get(thisLevel).get(xblock).get(yblock) != Constant.BLOCKVALUES.TRANSPORT
+							.getValue()) {
+						yblock += direction;
+						if (yblock > mapHeigth[thisLevel] - 1)
+							yblock = 0;
+						if (yblock < 0)
+							yblock = mapHeigth[thisLevel] - 1;
+					}
+					// set character to the position of the landing site + one movement to ensure that he is outside the bounds of the transport site
+					// and does not start on the return trip (endless loop)
+					bounds.x = xblock * Constant.BLOCK_SIZE;
+					bounds.y = yblock * Constant.BLOCK_SIZE + (movement.y * 2);
+					// confirm transport
+					return true;
 				}
-				
-				// set character to the position of the landing site + one movement to ensure that he is outside the bounds of the transport site
-				// and does not start on the return trip (endless loop)
-				bounds.x = xblock * Constant.BLOCK_SIZE + movement.x;
-				bounds.y = yblock * Constant.BLOCK_SIZE + movement.y;
-				
-				// confirm transport
-				return true;
 			}
 		}
 		return false;
