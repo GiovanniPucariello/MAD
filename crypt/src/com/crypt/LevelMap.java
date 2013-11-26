@@ -150,7 +150,7 @@ public class LevelMap
 		}
 	}
 
-	int Cell(int x, int y)
+	public int Cell(int x, int y)
 	{
 		// get block details
 		int block = level.get(thisLevel).get(x).get(y);
@@ -158,8 +158,33 @@ public class LevelMap
 		// check if block is a transport or character start position and if so display a passage block
 		if (block == Constant.BLOCKVALUES.TRANSPORT.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
 		if (block == Constant.BLOCKVALUES.CHAR_START_POINT.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
+		if (block == Constant.BLOCKVALUES.SPAWN_SITE.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
 		
+		// check if a treasure block range 30 to 70 (4 blocks up, right, down, left * 10 types of treasure
+		if (block > 29 && block < 71)
+		{
+			// alcove blocks are 7 = up, 8= rh, 9 = dw, 10 = lh
+			block = (block - 30) % 4 + Constant.BLOCKVALUES.ALCOVEUP.getValue();
+		}
 		return block;
+	}
+	
+	public int cellProperties(int x, int y)
+	{
+		// get block details
+		int block = level.get(thisLevel).get(x).get(y);
+		
+		// check if a treasure type block
+		if (block >= 30 && block <= 70)
+		{
+			// return 1 - 10 for the treasure types
+			block = (int) (block - 30) / 4 + 1;
+			return block;
+		}
+		
+		// return 100 SPAWN_SITE if found
+		if (block == Constant.BLOCKVALUES.SPAWN_SITE.getValue()) return block;
+		return 0;
 	}
 	
 	int getMapLengthBlocks()

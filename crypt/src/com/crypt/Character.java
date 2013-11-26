@@ -90,9 +90,14 @@ public class Character
 		bounds.y = position.y;
 	}
 	
-	Vector2 getCharacterPosition()
+	public Vector2 getCharacterPosition()
 	{
 		return position;
+	}
+	
+	public Rectangle getCharacterBounds()
+	{
+		return bounds;
 	}
 	
 	void moveRight()
@@ -137,9 +142,6 @@ public class Character
 			transbounds.set(bounds);
 			if (levelMap.transportMe(transbounds, movement) == true) 
 			{
-				System.out.println("character position "+bounds.x+","+bounds.y);
-				
-				System.out.println("transport position "+transbounds.x+","+transbounds.y);
 				// start transport
 				transporting = true;
 				if (transbounds.y > bounds.y)

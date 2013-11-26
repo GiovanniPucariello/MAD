@@ -118,9 +118,9 @@ public abstract class Entity
 				imageSet = up;
 			} else if (movement.y < 0) {
 				imageSet = down;
-			} else if (movement.x > 1) {
+			} else if (movement.x > 0) {
 				imageSet = right;
-			} else if (movement.x < -1) {
+			} else if (movement.x < 0) {
 				imageSet = left;
 			}
 			// pick correct frame

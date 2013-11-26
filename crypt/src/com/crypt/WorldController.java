@@ -17,6 +17,7 @@ public class WorldController implements InputProcessor
 	private LevelMap levelMap;
 	private Assets assets;
 	public Character character;
+	public TreasureRegister treasureSites;
 	private WorldRenderer renderer;
 	
 	public WorldController() 
@@ -29,13 +30,17 @@ public class WorldController implements InputProcessor
 		background = new Background(levelMap);
 		// Instantiate character
 		character = new Character(this, levelMap, assets.getCharAnim());
+		// instantiate TreasureRegister
+		treasureSites = new TreasureRegister(levelMap, assets.getTreasureImages());
 		// Setup input detection to this class
 		Gdx.input.setInputProcessor(this);	
 	}
 	
 	public void init() 
 	{
+		// initial objects for this level
 		character.init();
+		treasureSites.init();
 	}
 	
 	public void update (float deltaTime) 
@@ -50,6 +55,7 @@ public class WorldController implements InputProcessor
 		viewPort = renderer.updateViewport();
 		
 		// update all other objects below here
+		treasureSites.collectTresasure(character.getCharacterBounds());
 	}
 
 	private void handleAccelerometer() {
