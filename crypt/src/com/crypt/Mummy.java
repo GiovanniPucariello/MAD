@@ -16,8 +16,7 @@ public class Mummy extends Entity
 		super(position, animation);
 				
 		CHAR_SPEED = 150;
-		//velocity.x = randomGenerator.nextInt(2)-1;
-		//velocity.y = randomGenerator.nextInt(2)-1;		
+		
 		
 		velocity.y = -1;
 		
@@ -28,6 +27,5 @@ public class Mummy extends Entity
 	{
 		velocity.x = randomGenerator.nextInt(3)-1;
 		velocity.y = randomGenerator.nextInt(3)-1;
-		System.out.println(velocity.x+" "+velocity.y);
 	}
 }

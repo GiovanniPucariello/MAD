@@ -74,15 +74,13 @@ public abstract class Entity
 		// calculate the movement by multiplying the velocity vector by time passed to get the movement
 		movement.set(velocity.tmp().mul(deltaTime * CHAR_SPEED));
 		
-				// check and validate movement
+		// check and validate movement
 		if (levelMap.canIMove(bounds, movement) == false)
 		{
-			System.out.println(movement.x+" "+movement.y);
 			// check returned movement to see if it did not move vertically or horizontally
 			if (movement.x == 0 && movement.y == 0)
 			{
 				changeDirection();
-				System.out.println(movement.x+" "+movement.y);
 			}
 		}
 		// check if on screen
