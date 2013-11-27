@@ -74,6 +74,7 @@ public class WorldRenderer implements Disposable {
 			// ****** render all other objects here and below ******
 			world.character.draw(batch);
 			world.treasureSites.draw(batch);
+			world.monsterRegister.draw(batch);
 			
 		batch.end();
 	}

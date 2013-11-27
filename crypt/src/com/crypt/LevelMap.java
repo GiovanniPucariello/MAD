@@ -217,7 +217,7 @@ public class LevelMap
 		// Potential problem if the frame rate is slow.
 		// A entity can move pass an opening in one frame and therefore a check for openings between start and moved to position should be added.
 		
-		boolean collisionFlag = false;
+		boolean collisionFlag = true;
 		// check for moving left
 		if (movement.x < 0)
 		{
@@ -231,7 +231,7 @@ public class LevelMap
 				// correct the movement so the call code knows
 				movement.x = 0;
 				// flag to stop moving in this direction
-				collisionFlag = true;
+				collisionFlag = false;
 			}
 			// check if right edge of bounds has collisions 
 			if (notPath(bounds.x, bounds.y) || notPath(bounds.x, bounds.y + bounds.height))
@@ -242,7 +242,7 @@ public class LevelMap
 				// correct the movement so the call code knows
 				movement.x = 0;
 				// flag to stop moving in this direction
-				collisionFlag = true;
+				collisionFlag = false;
 			}
 		}
 		// check for moving right
@@ -257,7 +257,7 @@ public class LevelMap
 				// correct the movement so the call code knows
 				movement.x = 0;
 				// flag to stop moving in this direction
-				collisionFlag = true;
+				collisionFlag = false;
 			}
 			// check if right edge of bounds has collisions
 			if (notPath(bounds.x + bounds.width, bounds.y) || notPath(bounds.x + bounds.width, bounds.y + bounds.height))
@@ -268,7 +268,7 @@ public class LevelMap
 				// correct the movement so the call code knows
 				movement.x = 0;
 				// flag to stop moving in this direction
-				collisionFlag = true;
+				collisionFlag = false;
 			}
 		}
 		// check for moving down
@@ -283,7 +283,7 @@ public class LevelMap
 				// correct the movement so the call code knows
 				movement.y = 0;
 				// flag to stop moving in this direction
-				collisionFlag = true;
+				collisionFlag = false;
 			}
 			// check if bottom edge of bounds has collisions 
 			if (notPath(bounds.x, bounds.y) || notPath(bounds.x + bounds.width, bounds.y))
@@ -294,7 +294,7 @@ public class LevelMap
 				// correct the movement so the call code knows
 				movement.y = 0;
 				// flag to stop moving in this direction
-				collisionFlag = true;
+				collisionFlag = false;
 			}
 		}
 		// check for moving up
@@ -309,7 +309,7 @@ public class LevelMap
 				// correct the movement so the call code knows
 				movement.y = 0;
 				// flag to stop moving in this direction
-				collisionFlag = true;
+				collisionFlag = false;
 			}
 			// check if top edge of bounds has collisions
 			if (notPath(bounds.x, bounds.y + bounds.height) || notPath(bounds.x + bounds.width, bounds.y + bounds.height))
@@ -320,7 +320,7 @@ public class LevelMap
 				// correct the movement so the call code knows
 				movement.y = 0;
 				// flag to stop moving in this direction
-				collisionFlag = true;
+				collisionFlag = false;
 			}
 		}
 		return collisionFlag;

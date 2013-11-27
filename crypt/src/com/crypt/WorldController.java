@@ -19,6 +19,7 @@ public class WorldController implements InputProcessor
 	public Character character;
 	public TreasureRegister treasureSites;
 	private WorldRenderer renderer;
+	public MonsterRegister monsterRegister;
 	
 	public WorldController() 
 	{
@@ -32,6 +33,8 @@ public class WorldController implements InputProcessor
 		character = new Character(this, levelMap, assets.getCharAnim());
 		// instantiate TreasureRegister
 		treasureSites = new TreasureRegister(levelMap, assets.getTreasureImages());
+		// Instantiate MonsterRegister
+		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim(), viewPort);
 		// Setup input detection to this class
 		Gdx.input.setInputProcessor(this);	
 	}
@@ -50,6 +53,8 @@ public class WorldController implements InputProcessor
 		
 		// call all world objects to update themselves
 		character.update(deltaTime);
+		
+		monsterRegister.update(deltaTime);
 		
 		// update the screen area to be rendered
 		viewPort = renderer.updateViewport();

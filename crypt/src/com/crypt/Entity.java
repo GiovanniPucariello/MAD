@@ -9,10 +9,10 @@ import com.badlogic.gdx.math.Vector2;
 public abstract class Entity 
 {
 	// velocity x & y should only be set to -1, 0 , 1
-	protected Vector2 velocity;
+	protected Vector2 velocity = new Vector2(0,0);
 	
 	// size of entity for collision checking and movement
-	protected Rectangle bounds;
+	protected Rectangle bounds = new Rectangle(0,0,0,0);
 	
 	// the frame to be rendered
 	protected TextureRegion currentFrame;
@@ -32,7 +32,7 @@ public abstract class Entity
 	// temporary storage for the current frames movement
 	// also used to communicate back from level map if the entity
 	// is unable to move in the requested direction
-	protected Vector2 movement;
+	protected Vector2 movement = new Vector2(0,0);
 	
 	// statetime used to calculate the correct image to display
 	private float stateTime;
@@ -55,13 +55,15 @@ public abstract class Entity
 	public Entity(Vector2 position, Animation[] animation)
 	{
 		this.animation = animation;
-		
+		this.bounds = new Rectangle(0,0, this.animation[0].getKeyFrame(0f).getRegionWidth(),this.animation[0].getKeyFrame(0f).getRegionHeight());
 		// initialise boundary of object
 		bounds.x = position.x;
 		bounds.y = position.y;
 		// set width and height to first animation frame
-		bounds.width = animation[0].getKeyFrame(0f).getRegionWidth() - 3;
-		bounds.height = animation[0].getKeyFrame(0f).getRegionWidth() - 3;
+		bounds.width = animation[0].getKeyFrame(0f).getRegionWidth()-3;
+		bounds.height = animation[0].getKeyFrame(0f).getRegionWidth()-3;
+		
+		System.out.println("X: "+bounds.x+" Y: "+bounds.y);
 	}
 	
 	public void update(float deltaTime, Rectangle Viewport)
@@ -72,17 +74,19 @@ public abstract class Entity
 		// calculate the movement by multiplying the velocity vector by time passed to get the movement
 		movement.set(velocity.tmp().mul(deltaTime * CHAR_SPEED));
 		
-		// check and validate movement
+				// check and validate movement
 		if (levelMap.canIMove(bounds, movement) == false)
 		{
+			System.out.println(movement.x+" "+movement.y);
 			// check returned movement to see if it did not move vertically or horizontally
 			if (movement.x == 0 && movement.y == 0)
 			{
 				changeDirection();
+				System.out.println(movement.x+" "+movement.y);
 			}
 		}
 		// check if on screen
-		if (!Viewport.contains(bounds))
+		if (!Viewport.overlaps(bounds))
 		{
 			onScreen = false;
 			offScreenTimer += deltaTime;
@@ -110,7 +114,7 @@ public abstract class Entity
 
 	void draw(SpriteBatch batch)
 	{
-		if (onScreen) 
+		if (onScreen || !onScreen) 
 		{
 			imageSet = up;
 			// Set image set to reflect movement
