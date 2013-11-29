@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public class Character
 {
@@ -37,7 +38,11 @@ public class Character
 	// players state
 	private boolean hit = false;
 	private boolean transporting = false;
-
+	private boolean appearing = false;
+	private boolean appeared = false;
+	private float appearingTime = 0f;
+	private float stoodtimer = 0;
+	
 	// frame to render
 	private TextureRegion currentFrame;
 	
@@ -49,6 +54,7 @@ public class Character
 	
 	// animation class
 	private Animation[] animation = new Animation[5];
+	private Animation[] teleport = new Animation[1];
 	
 	// animation indexes
 	private int up = 0;
@@ -58,12 +64,16 @@ public class Character
 	private int stood = 4;
 	private int imageSet = 0;
 	
-	Character(WorldController world, LevelMap levelMap, Animation[] animation)
+	// state information
+	private Array<Key> collectedKeys = new Array<Key>();
+	
+	Character(WorldController world, LevelMap levelMap, Animation[] animation, Animation[] teleport)
 	{
 		this.world = world;
 		this.levelMap = levelMap;
 		
 		this.animation = animation;
+		this.teleport = teleport;
 		
 		// Transport sound
 		transportsound = Gdx.audio.newSound(Gdx.files.internal("data/Trans3.mp3"));
@@ -78,7 +88,8 @@ public class Character
 		
 		// It been necessary to reduce the size by 3 pixels to prevent it moving pass opening in a single frame update
 		// if further works required to this then see LevelMap - canIMove method (needs to check for openings between start and moved to position.
-		bounds = new Rectangle(0,0, this.animation[0].getKeyFrame(0f).getRegionWidth()-3,this.animation[0].getKeyFrame(0f).getRegionHeight()-3);
+		bounds = new Rectangle(0,0, this.animation[0].getKeyFrame(0f).getRegionWidth()-1,this.animation[0].getKeyFrame(0f).getRegionHeight()-1);
+		currentFrame = animation[stood].getKeyFrame(stateTime, true);
 	}
 	
 	public void init()
@@ -88,6 +99,12 @@ public class Character
 		// set bounds position to position
 		bounds.x = position.x;
 		bounds.y = position.y;
+		collectedKeys.clear();
+	}
+	
+	public Array<Key> getKeys()
+	{
+		return collectedKeys;
 	}
 	
 	public Vector2 getCharacterPosition()
@@ -147,40 +164,60 @@ public class Character
 				if (transbounds.y > bounds.y)
 				{
 					transVelocity.y = 1;
+					
 				}
 				else
 				{
 					transVelocity.y = -1;
 				}
 			}
-			// check and validate movement
-			levelMap.canIMove(bounds, movement);
+			else
+			{
+				// check and validate movement
+				levelMap.canIMove(bounds, movement);
+			}
 		}
 		else
 		{
-			// calculate the movement by multiplying the velocity vector by time passed to get the movement
-			movement.set(transVelocity.tmp().mul(deltaTime * TRANS_SPEED));
-			
-			// update transport position
-			bounds.x += movement.x;
-			bounds.y += movement.y;
-
-			// check direction of travel & check if arrived at the destination
-			if (transVelocity.y > 0 && bounds.y > transbounds.y)
+			if (appearing == false) 
 			{
-				bounds.x = transbounds.x;
-				bounds.y = transbounds.y;
-				transporting = false;
+				// calculate the movement by multiplying the velocity vector by time passed to get the movement
+				movement.set(transVelocity.tmp().mul(deltaTime * TRANS_SPEED));
+				
+				// update transport position
+				bounds.x += movement.x;
+				bounds.y += movement.y;
+	
+				// not appeared yet
 
-				transportsound.play();
+				// check direction of travel & check if arrived at the destination
+				if (transVelocity.y > 0 && bounds.y > transbounds.y) 
+				{
+					// arrived / start appearing
+					appearing = true;
+					bounds.x = transbounds.x;
+					bounds.y = transbounds.y;
+					transportsound.play();
+				} 
+				else if (transVelocity.y < 0 && bounds.y < transbounds.y) 
+				{
+					// arrived / start appearing
+					appearing = true;
+					bounds.x = transbounds.x;
+					bounds.y = transbounds.y;
+					transportsound.play();
+				}
 			}
-			else if (transVelocity.y < 0 && bounds.y < transbounds.y)
+			else
 			{
-				bounds.x = transbounds.x;
-				bounds.y = transbounds.y;
-				transporting = false;
-
-				transportsound.play();
+				if (appeared)
+				{
+					// transport over reset state
+					transporting = false;
+					appearing = false;
+					appeared = false;
+					appearingTime = 0;
+				}
 			}
 		}
 		// update character position to bounds position
@@ -193,20 +230,91 @@ public class Character
 		if (!transporting) 
 		{
 			// Set image set to reflex movement
-			if (movement.y > 0) {
+			if (movement.y > 0) 
+			{
 				imageSet = up;
-			} else if (movement.y < 0) {
+				stoodtimer = 0;
+			}
+			else if (movement.y < 0) 
+			{
 				imageSet = down;
-			} else if (movement.x > 1) {
+				stoodtimer = 0;
+			} 
+			else if (movement.x > 1) 
+			{
 				imageSet = right;
-			} else if (movement.x < -1) {
+				stoodtimer = 0;
+			}
+			else if (movement.x < -1) 
+			{
 				imageSet = left;
-			} else
-				imageSet = stood;
+				stoodtimer = 0;
+			}
+			else
+			{
+				// increment delay timer				
+				stoodtimer += Gdx.graphics.getDeltaTime();
+				
+				// check if stood for over 1.5 seconds
+				if (stoodtimer > 1.5)
+				{
+					// reset timer and select a stood position
+					stoodtimer = 0;
+					currentFrame = animation[stood].getKeyFrame(stateTime, true);
+				}
+			}
+			
 			// pick correct frame
-			currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
+			if (movement.x !=0 || movement.y != 0) currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
 			// draw image
 			batch.draw(currentFrame, position.x, position.y);
 		}
+		else if (appearing == true)
+		{
+			// update animation time state
+			appearingTime += Gdx.graphics.getDeltaTime();
+			// pick correct frame
+			currentFrame = teleport[0].getKeyFrame(appearingTime, false);
+			if (teleport[0].isAnimationFinished(appearingTime))
+			{
+				appeared = true;
+
+			}
+			// draw animation
+			batch.draw(currentFrame, position.x, position.y);
+		}
+			
+	}
+	
+	public void addkeys(Array<Key> keys)
+	{
+		collectedKeys.addAll(keys);
+	}
+	
+	public boolean isLevelfinished()
+	{
+		int numXBlock = 0;
+		int numYBlock = 0;
+		
+		// convert to block references
+		int xblock = (int) bounds.x / Constant.BLOCK_SIZE;
+		int yblock = (int) bounds.y / Constant.BLOCK_SIZE;
+		
+		// check if the block is a NEXT_LEVEL block
+		if (levelMap.cellProperties(xblock, yblock) == Constant.BLOCKVALUES.NEXT_LEVEL.getValue())
+		{
+			// check if the block adjacent are also
+			if (levelMap.cellProperties(xblock+1, yblock) == Constant.BLOCKVALUES.NEXT_LEVEL.getValue()) numXBlock = 2; else numXBlock =1;
+			if (levelMap.cellProperties(xblock, yblock+1) == Constant.BLOCKVALUES.NEXT_LEVEL.getValue()) numYBlock = 2; else numYBlock =1;
+			
+			// check that the character is within the areas of the blocks
+			Rectangle testArea = new Rectangle(bounds.x - 2, bounds.y - 2, (Constant.BLOCK_SIZE * numYBlock) + 4, (Constant.BLOCK_SIZE * numXBlock +4));
+			if (testArea.contains(bounds))
+			{
+				return true;
+			}
+			
+		}
+		return false;
 	}
 }

@@ -36,6 +36,13 @@ public class LevelMap
 	// us to check that the character is within a block space
 	private Rectangle blockbounds = new Rectangle(0,0,Constant.BLOCK_SIZE+1, Constant.BLOCK_SIZE+1);
 	
+	// Door register used to check whether a cell can be entered
+	private DoorRegister doorRegister;
+	
+	// temporary Movement vector
+	private Vector2 tempMovement = new Vector2(0,0);
+	private Vector2 movementStep = new Vector2(0,0);
+	
 	LevelMap()
 	{
 		// Open level data		
@@ -149,6 +156,11 @@ public class LevelMap
 			thisLevel = level;
 		}
 	}
+	
+	public void setDoorRegister(DoorRegister doorRegister)
+	{
+		this.doorRegister = doorRegister;
+	}
 
 	public int Cell(int x, int y)
 	{
@@ -157,15 +169,39 @@ public class LevelMap
 		
 		// check if block is a transport or character start position and if so display a passage block
 		if (block == Constant.BLOCKVALUES.TRANSPORT.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
-		if (block == Constant.BLOCKVALUES.CHAR_START_POINT.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
-		if (block == Constant.BLOCKVALUES.SPAWN_SITE.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
+		else if (block == Constant.BLOCKVALUES.CHAR_START_POINT.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
+		else if (block == Constant.BLOCKVALUES.SPAWN_SITE.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
 		
-		// check if a treasure block range 30 to 70 (4 blocks up, right, down, left * 10 types of treasure
-		if (block > 29 && block < 71)
+		// check if a treasure block range 30 to 69 (4 blocks up, right, down, left * 10 types of treasure
+		else if (block > 29 && block < 71)
 		{
 			// alcove blocks are 7 = up, 8= rh, 9 = dw, 10 = lh
 			block = (block - 30) % 4 + Constant.BLOCKVALUES.ALCOVEUP.getValue();
 		}
+		
+		// check if block is a key block range 110 to 119 (4 blocks up, right, down, left * 10 keys)
+		else if (block > 109 && block < 120)
+		{
+			// alcove blocks are 7 = up, 8= rh, 9 = dw, 10 = lh
+			block = (block - 110) % 4 + Constant.BLOCKVALUES.ALCOVEUP.getValue();
+		}
+		
+		// check if block is a door block range 120 to 129 (120 = key1, 121 = key2 etc.)
+		else if (block >= 150 && block <= 159)
+		{
+			if (doorRegister.isDoorOpen(x,y) == false)
+			{
+				return Constant.BLOCKVALUES.PASSAGE_NO_WALK.getValue();
+			} 
+			else
+			{
+				return Constant.BLOCKVALUES.PASSAGE.getValue();
+			}
+		}
+		
+		// next level
+		else if (block == Constant.BLOCKVALUES.NEXT_LEVEL.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
+		
 		return block;
 	}
 	
@@ -182,17 +218,37 @@ public class LevelMap
 			return block;
 		}
 		
+		
+		// check if a key type block
+		else if (block >= 110 && block <= 149)
+		{
+			// return 11 - 20 for the key value
+			block = (int) (block - 110) / 4 + 11;
+			return block;
+		}
+		
+		// check if a door block
+		else if (block >= 150 && block <= 159)
+		{
+			// return 21 - 30 for the key value
+			block = (int) (block - 150) + 21;
+			return block;
+		}
+				
 		// return 100 SPAWN_SITE if found
-		if (block == Constant.BLOCKVALUES.SPAWN_SITE.getValue()) return block;
+		else if (block == Constant.BLOCKVALUES.SPAWN_SITE.getValue()) return block;
+		
+		// next level
+		else if (block == Constant.BLOCKVALUES.NEXT_LEVEL.getValue()) return block;
 		return 0;
 	}
 	
-	int getMapLengthBlocks()
+	public int getMapLengthBlocks()
 	{
 		return mapLength[thisLevel];
 	}
 	
-	int getMapHeightBlocks()
+	public int getMapHeightBlocks()
 	{
 		return mapHeigth[thisLevel];
 	}
@@ -216,7 +272,67 @@ public class LevelMap
 	{
 		// Potential problem if the frame rate is slow.
 		// A entity can move pass an opening in one frame and therefore a check for openings between start and moved to position should be added.
+
+		float x, y, xstep, ystep;
+		int loop = 0;
+		x = movement.x;
+		y = movement.y;
 		
+		// check no movement
+		if(x == 0 && y== 0) return true;
+		
+		// ensure numbers are positive
+		if (x < 0) x*= -1;
+		if (y < 0) y*= -1;
+		
+		if (x == 0)
+		{
+			xstep = 0;
+			ystep = 1;
+			loop = (int) (y + 0.5f);
+		}
+		else if (y == 0)
+		{
+			xstep = 1;
+			ystep = 0;
+			loop = (int) (x + 0.5f);
+		}
+		else
+		{
+			if (x > y)
+			{
+				xstep = y / x;
+				ystep = 1;
+				loop = (int) (y + 0.5f); 
+			}
+			else
+			{
+				xstep = 1;
+				ystep = x /y;
+				loop = (int) (x + 0.5f);
+			}
+		}
+		
+		// convert back to negatives if required
+		if (movement.x < 0) xstep *= -1;
+		if (movement.y < 0) ystep *= -1;
+		
+		boolean collisionFlag = true;
+		for(int i = 0; i < loop; i++)
+		{
+			movementStep.set(xstep, ystep);
+			if (eachMove(bounds,movementStep) == false)
+			{
+				collisionFlag = false;
+			}
+		}
+		if (movementStep.x == 0) movement.x = 0;
+		if (movementStep.y == 0) movement.y = 0;
+		return collisionFlag;
+	}
+	
+	private boolean eachMove(Rectangle bounds, Vector2 movement)
+	{
 		boolean collisionFlag = true;
 		// check for moving left
 		if (movement.x < 0)

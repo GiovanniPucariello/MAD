@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public class WorldController implements InputProcessor
 {
@@ -18,9 +19,13 @@ public class WorldController implements InputProcessor
 	private Assets assets;
 	public Character character;
 	public TreasureRegister treasureSites;
+	public KeyRegister keyRegister;
+	public BulletRegister bulletreg;
+	public DoorRegister doorSites;
 	private WorldRenderer renderer;
 	public MonsterRegister monsterRegister;
-	public BulletRegister bulletreg;
+	private int currentlevel = 1;
+	private float timer = 0f;
 	
 	public WorldController() 
 	{
@@ -31,11 +36,17 @@ public class WorldController implements InputProcessor
 		// Instantiate background 
 		background = new Background(levelMap);
 		// Instantiate character
-		character = new Character(this, levelMap, assets.getCharAnim());
+		character = new Character(this, levelMap, assets.getCharAnim(), assets.getCharTeleport());
+		// instantiate KeyRegister
+		keyRegister = new KeyRegister(levelMap, assets.getKeyImages());
 		// instantiate TreasureRegister
 		treasureSites = new TreasureRegister(levelMap, assets.getTreasureImages());
 		// make a bullet Register
 		bulletreg = new BulletRegister(this, levelMap, assets.getBulletAnim());
+		// Instantiate DoorRegister
+		doorSites = new DoorRegister(levelMap, assets.getDoorClosed(), assets.getOpeningDoor());
+		levelMap.setDoorRegister(doorSites);
+		
 		// Instantiate MonsterRegister
 		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim());
 		// Setup input detection to this class
@@ -47,25 +58,53 @@ public class WorldController implements InputProcessor
 		// initial objects for this level
 		character.init();
 		treasureSites.init();
+		keyRegister.init();
+		doorSites.init();
 	}
 	
 	public void update (float deltaTime) 
 	{
-		// check for Accelerometer
-		handleAccelerometer();
-		
-		// call all world objects to update themselves
-		character.update(deltaTime);
-		
-		monsterRegister.update(deltaTime, viewPort);
-		
-		bulletreg.update(deltaTime, viewPort);
-		
-		// update the screen area to be rendered
-		viewPort = renderer.updateViewport();
-		
-		// update all other objects below here
-		treasureSites.collectTresasure(character.getCharacterBounds());
+		if (character.isLevelfinished() == false) 
+		{
+			// check for Accelerometer
+			handleAccelerometer();
+			
+			// call all world objects to update themselves
+			character.update(deltaTime);
+			
+			monsterRegister.update(deltaTime, viewPort);
+			
+			bulletreg.update(deltaTime, viewPort);
+			
+			// update the screen area to be rendered
+			viewPort = renderer.updateViewport();
+			
+			// update all other objects below here
+			
+			treasureSites.collectTresasure(character.getCharacterBounds());
+			
+			Array<Key> collected  = keyRegister.collectKey(character.getCharacterBounds());
+			character.addkeys(collected);
+			
+			doorSites.pleaseOpenDoor(character.getCharacterBounds(), character.getKeys());
+		}
+		else
+		{
+			// 3 second delay
+			if (timer < 3)
+			{
+				timer += Gdx.graphics.getDeltaTime();
+			}
+			else
+			{
+				timer = 0;
+				levelMap.setLevel(currentlevel++);
+				character.init();
+				treasureSites.init();
+				keyRegister.init();
+				doorSites.init();		
+			}				
+		}
 	}
 
 	private void handleAccelerometer() {
@@ -118,29 +157,31 @@ public class WorldController implements InputProcessor
 		Vector2 bulletDirection = new Vector2(0,0);
 		System.out.println("Bullet Starting pos: " + bulletStart);
 		System.out.println("Char Position: " + getCharacterPosition());
+
 		if (x> Math.abs(y))
 		{
 				System.out.println("firing right");
 				bulletDirection.x = 1;
 				bulletreg.add(bulletDirection,bulletStart);
-		}
+		} 
 		if ((-x)> Math.abs(y))
 		{
 				System.out.println("firing left");
 				bulletDirection.x = -1;
 				bulletreg.add(bulletDirection,bulletStart);
+
 		}
 		if (y> Math.abs(x))
 		{
-				System.out.println("firing Up");
-				bulletDirection.y = -1;
-				bulletreg.add(bulletDirection,bulletStart);
+			System.out.println("firing Up");
+			bulletDirection.y = -1;
+			bulletreg.add(bulletDirection,bulletStart);
 		}
 		if ((-y)> Math.abs(x))
 		{
-				System.out.println("firing Down");
-				bulletDirection.y = 1;
-				bulletreg.add(bulletDirection,bulletStart);
+			System.out.println("firing Down");
+			bulletDirection.y = 1;
+			bulletreg.add(bulletDirection,bulletStart);
 		}
 		if(y==x)
 		{
@@ -158,6 +199,7 @@ public class WorldController implements InputProcessor
 			bulletDirection.y = -1;
 			bulletreg.add(bulletDirection,bulletStart);
 		}
+
 	}
 	
 	public Vector2 getCharacterPosition()

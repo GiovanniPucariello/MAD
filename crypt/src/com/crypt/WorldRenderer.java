@@ -20,6 +20,9 @@ public class WorldRenderer implements Disposable {
 	// Screen viewPort
 	private Rectangle viewPort = new Rectangle(0,0,0,0);
 	private Rectangle backgroundPort = new Rectangle(0,0,0,0);
+	
+	// time lapse
+	float deltatime;
 		
 	public WorldRenderer (WorldController world) 
 	{
@@ -72,10 +75,12 @@ public class WorldRenderer implements Disposable {
 			batch.enableBlending();
 			
 			// ****** render all other objects here and below ******
+			deltatime = Gdx.graphics.getDeltaTime();
 			world.character.draw(batch);
 			world.treasureSites.draw(batch);
+			world.keyRegister.draw(batch);
+			world.doorSites.draw(batch, deltatime);
 			world.monsterRegister.draw(batch);
-			world.bulletreg.draw(batch);
 			
 		batch.end();
 	}

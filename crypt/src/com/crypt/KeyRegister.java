@@ -8,24 +8,27 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class TreasureRegister 
+public class KeyRegister 
 {
-	// collection of treasure objects for this levels 
-	private Array<Treasure> treasureSites = new Array<Treasure>();
+	// collection of keys on this levels
+	private Array<Key> keySites = new Array<Key>();
+	
+	// collection of keys collected each time of checking
+	private Array<Key> collectedKeys = new Array<Key>();
 	
 	// reference to levelMap
 	private LevelMap levelMap;
 	
 	// treasure images
-	private TextureRegion[] treasureImages;
+	private TextureRegion[] keyImages;
 	
 	// sounds
 	private Sound collectsound;
 	
-	public TreasureRegister(LevelMap levelMap, TextureRegion[] treasureImages)
+	public KeyRegister(LevelMap levelMap, TextureRegion[] keyImages)
 	{
 		this.levelMap = levelMap;
-		this.treasureImages = treasureImages;
+		this.keyImages = keyImages;
 		// collect sound
 		collectsound = Gdx.audio.newSound(Gdx.files.internal("data/Collect4.mp3"));
 	}
@@ -33,7 +36,7 @@ public class TreasureRegister
 	public void init()
 	{
 		// clear collection out
-		treasureSites.clear();
+		keySites.clear();
 		
 		int block;
 		int blockProperty;
@@ -49,81 +52,88 @@ public class TreasureRegister
 				{
 					// check if alcove contains treasure and if so what type
 					blockProperty = levelMap.cellProperties(x, y);
-					if (blockProperty > Constant.TREASURE_TYPE.EMRALD.getValue() && blockProperty < Constant.TREASURE_TYPE.GOLD.getValue())
+					if (blockProperty >= Constant.KEY_TYPE.KEY1.getValue() && blockProperty <= Constant.KEY_TYPE.KEY10.getValue())
 					{
 						Vector2 position = new Vector2(x * Constant.BLOCK_SIZE, y * Constant.BLOCK_SIZE);
 						Rectangle bounds = new Rectangle(position.x -3, position.y + Constant.BLOCK_SIZE - 3, Constant.BLOCK_SIZE + 6, Constant.BLOCK_SIZE + 6);
-						treasureSites.add(new Treasure(position, treasureImages, blockProperty-1, getPoints(blockProperty), bounds));
+						keySites.add(new Key(position, keyImages, blockProperty-11, getKeyValue(blockProperty), bounds));
 					}
 				}
 				if (block == Constant.BLOCKVALUES.ALCOVERH.getValue())
 				{
 					// check if alcove contains treasure and if so what type
 					blockProperty = levelMap.cellProperties(x, y);
-					if (blockProperty > Constant.TREASURE_TYPE.EMRALD.getValue() && blockProperty < Constant.TREASURE_TYPE.GOLD.getValue())
+					if (blockProperty >= Constant.KEY_TYPE.KEY1.getValue() && blockProperty <= Constant.KEY_TYPE.KEY10.getValue())
 					{
 						Vector2 position = new Vector2(x * Constant.BLOCK_SIZE, y * Constant.BLOCK_SIZE);
 						Rectangle bounds = new Rectangle(position.x + Constant.BLOCK_SIZE - 3, position.y - 3, Constant.BLOCK_SIZE + 6, Constant.BLOCK_SIZE + 6);
-						treasureSites.add(new Treasure(position, treasureImages, blockProperty -1, getPoints(blockProperty), bounds));
+						keySites.add(new Key(position, keyImages, blockProperty -11, getKeyValue(blockProperty), bounds));
 					}
 				}
 				if (block == Constant.BLOCKVALUES.ALCOVEDW.getValue())
 				{
 					// check if alcove contains treasure and if so what type
 					blockProperty = levelMap.cellProperties(x, y);
-					if (blockProperty > Constant.TREASURE_TYPE.EMRALD.getValue() && blockProperty < Constant.TREASURE_TYPE.GOLD.getValue())
+					if (blockProperty >= Constant.KEY_TYPE.KEY1.getValue() && blockProperty <= Constant.KEY_TYPE.KEY10.getValue())
 					{
 						Vector2 position = new Vector2(x * Constant.BLOCK_SIZE, y * Constant.BLOCK_SIZE);
 						Rectangle bounds = new Rectangle(position.x -3, position.y - Constant.BLOCK_SIZE - 3, Constant.BLOCK_SIZE + 6, - Constant.BLOCK_SIZE - 6);
-						treasureSites.add(new Treasure(position, treasureImages, blockProperty-1, getPoints(blockProperty), bounds));
+						keySites.add(new Key(position, keyImages, blockProperty-11, getKeyValue(blockProperty), bounds));
 					}
 				}
 				if (block == Constant.BLOCKVALUES.ALCOVELH.getValue())
 				{
 					// check if alcove contains treasure and if so what type
 					blockProperty = levelMap.cellProperties(x, y);
-					if (blockProperty > Constant.TREASURE_TYPE.EMRALD.getValue() && blockProperty < Constant.TREASURE_TYPE.GOLD.getValue())
+					if (blockProperty >= Constant.KEY_TYPE.KEY1.getValue() && blockProperty <= Constant.KEY_TYPE.KEY10.getValue())
 					{
 						Vector2 position = new Vector2(x * Constant.BLOCK_SIZE, y * Constant.BLOCK_SIZE);
 						Rectangle bounds = new Rectangle(position.x - Constant.BLOCK_SIZE - 3, position.y - 3, Constant.BLOCK_SIZE + 6, Constant.BLOCK_SIZE + 6);
-						treasureSites.add(new Treasure(position, treasureImages, blockProperty-1, getPoints(blockProperty), bounds));
-						
+						keySites.add(new Key(position, keyImages, blockProperty-11, getKeyValue(blockProperty), bounds));
 					}
 				}
 			}
 		}
 	}
 	
-	private int getPoints(int blockProperty)
+	public Array<Key> collectKey(Rectangle bounds)
 	{
-		for(Constant.TREASURE_TYPE treasure : Constant.TREASURE_TYPE.values()) {
-	        if (treasure.getValue() == blockProperty) return treasure.getPoints();
-	     }
-		return 0;
-	}
-	
-	public int collectTresasure(Rectangle bounds)
-	{
-		int points = 0;
-		for(Treasure sites: treasureSites)
+	// clear the collection before checking for new keys collected
+		collectedKeys.clear();
+		
+		// temp variable
+		Key tempkey;
+		
+		for(Key sites: keySites)
 		{
-			points += sites.collectTreasure(bounds);
+			tempkey = sites.collectKey(bounds);
+			if (tempkey != null)
+			{
+				collectedKeys.add(tempkey);
+			}
 		}
 		
-		if (points > 0)
+		if (collectedKeys.size > 0)
 		{
 			collectsound.play();
-			System.out.println("Points "+ points);
 		}
-		return points;
+		
+		return collectedKeys;
 	}
 	
 	public void draw(SpriteBatch batch)
 	{
-		for(Treasure sites: treasureSites)
+		for(Key sites: keySites)
 		{
 			sites.draw(batch);
 		}
 	}
 	
+	private int getKeyValue(int blockProperty)
+	{
+		for(Constant.KEY_TYPE key : Constant.KEY_TYPE.values()) {
+	        if (key.getValue() == blockProperty) return key.getKeyValue();
+	     }
+		return 0;
+	}
 }
