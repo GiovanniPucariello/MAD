@@ -27,7 +27,8 @@ public class Constant
 		ALCOVEUP("data/AlcoveUP.png"),
 		ALCOVERH("data/AlcoveRH.png"),
 		ALCOVEDW("data/AlcoveDW.png"),
-		ALCOVELH("data/AlcoveLH.png");
+		ALCOVELH("data/AlcoveLH.png");//,
+		//SPAWN_SITE("data/AlcoveUP.png");
 		
 		private String filename;
 				

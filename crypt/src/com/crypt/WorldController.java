@@ -109,22 +109,54 @@ public class WorldController implements InputProcessor
 	 */
 	public void addbullet(float x , float y)
 	{
+		int centerx = Gdx.graphics.getWidth() /2;
+		int centery = Gdx.graphics.getHeight() /2;
+		x = x-centerx;
+		y = y-centery;
 		// Call bulletRegister class from here and add bullet
 		Vector2 bulletStart = getCharacterPosition();
 		Vector2 bulletDirection = new Vector2(0,0);
 		System.out.println("Bullet Starting pos: " + bulletStart);
 		System.out.println("Char Position: " + getCharacterPosition());
-		if (x > Gdx.graphics.getWidth() /2)
+		if (x> Math.abs(y))
 		{
 				System.out.println("firing right");
 				bulletDirection.x = 1;
 				bulletreg.add(bulletDirection,bulletStart);
-		} 
-		else
+		}
+		if ((-x)> Math.abs(y))
 		{
 				System.out.println("firing left");
 				bulletDirection.x = -1;
 				bulletreg.add(bulletDirection,bulletStart);
+		}
+		if (y> Math.abs(x))
+		{
+				System.out.println("firing Up");
+				bulletDirection.y = -1;
+				bulletreg.add(bulletDirection,bulletStart);
+		}
+		if ((-y)> Math.abs(x))
+		{
+				System.out.println("firing Down");
+				bulletDirection.y = 1;
+				bulletreg.add(bulletDirection,bulletStart);
+		}
+		if(y==x)
+		{
+			System.out.println("firing EVERYWHERE!!!");
+			bulletDirection.x = 1;
+			bulletDirection.y = 0;
+			bulletreg.add(bulletDirection,bulletStart);
+			bulletDirection.x = -1;
+			bulletDirection.y = 0;
+			bulletreg.add(bulletDirection,bulletStart);
+			bulletDirection.x = 0;
+			bulletDirection.y = 1;
+			bulletreg.add(bulletDirection,bulletStart);
+			bulletDirection.x = 0;
+			bulletDirection.y = -1;
+			bulletreg.add(bulletDirection,bulletStart);
 		}
 	}
 	
