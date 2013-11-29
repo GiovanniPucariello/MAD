@@ -10,6 +10,7 @@ public class Assets
 	// asset objects
 	private EntityAnimations character = new EntityAnimations("data/ManSprites.png", 4, 0.075f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
 	private EntityAnimations mummy = new EntityAnimations("data/MummySprite.png",3,0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
+	private EntityAnimations bullet = new EntityAnimations("data/BulletSprite.png",3,0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
 	private TextureRegion[] treasure = new TextureRegion[10];
 	
 	public Animation[] getCharAnim()
@@ -20,6 +21,11 @@ public class Assets
 	public Animation[] getMummyAnim()
 	{
 		return mummy.getAnimations();
+	}
+	
+	public Animation[] getBulletAnim(){
+		//bullet = new Texture(Gdx.files.internal("data/bullet2.png"));
+        return bullet.getAnimations();
 	}
 	
 	public TextureRegion[] getTreasureImages()

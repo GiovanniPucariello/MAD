@@ -20,6 +20,7 @@ public class WorldController implements InputProcessor
 	public TreasureRegister treasureSites;
 	private WorldRenderer renderer;
 	public MonsterRegister monsterRegister;
+	public BulletRegister bulletreg;
 	
 	public WorldController() 
 	{
@@ -33,6 +34,8 @@ public class WorldController implements InputProcessor
 		character = new Character(this, levelMap, assets.getCharAnim());
 		// instantiate TreasureRegister
 		treasureSites = new TreasureRegister(levelMap, assets.getTreasureImages());
+		// make a bullet Register
+		bulletreg = new BulletRegister(this, levelMap, assets.getBulletAnim(), viewPort);
 		// Instantiate MonsterRegister
 		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim(), viewPort);
 		// Setup input detection to this class
@@ -55,6 +58,8 @@ public class WorldController implements InputProcessor
 		character.update(deltaTime);
 		
 		monsterRegister.update(deltaTime);
+		
+		bulletreg.update(deltaTime);
 		
 		// update the screen area to be rendered
 		viewPort = renderer.updateViewport();
@@ -105,13 +110,21 @@ public class WorldController implements InputProcessor
 	public void addbullet(float x , float y)
 	{
 		// Call bulletRegister class from here and add bullet
+		Vector2 bulletStart = getCharacterPosition();
+		Vector2 bulletDirection = new Vector2(0,0);
+		System.out.println("Bullet Starting pos: " + bulletStart);
+		System.out.println("Char Position: " + getCharacterPosition());
 		if (x > Gdx.graphics.getWidth() /2)
 		{
 				System.out.println("firing right");
+				bulletDirection.x = 1;
+				bulletreg.add(bulletDirection,bulletStart);
 		} 
 		else
 		{
 				System.out.println("firing left");
+				bulletDirection.x = -1;
+				bulletreg.add(bulletDirection,bulletStart);
 		}
 	}
 	

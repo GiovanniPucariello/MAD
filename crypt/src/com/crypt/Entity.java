@@ -80,6 +80,7 @@ public abstract class Entity
 			// check returned movement to see if it did not move vertically or horizontally
 			if (movement.x == 0 && movement.y == 0)
 			{
+				//System.out.println("change Direction");
 				changeDirection();
 			}
 		}
