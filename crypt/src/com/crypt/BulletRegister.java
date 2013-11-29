@@ -22,11 +22,10 @@ public class BulletRegister {
     // use a Hit sound?
     private Sound fireSound;
     
-	public BulletRegister(WorldController worldController, LevelMap levelMap, Animation[] animation, Rectangle viewPort)
+	public BulletRegister(WorldController worldController, LevelMap levelMap, Animation[] animation)
 	{
 		this.levelMap = levelMap;
 		this.animation = animation;
-		this.viewPort = viewPort;
 		
 		fireSound = Gdx.audio.newSound(Gdx.files.internal("data/shot2.mp3"));//needs replacing.
 	}
@@ -44,7 +43,7 @@ public class BulletRegister {
 			lastFiredTime = TimeUtils.nanoTime();
 		}
 	}
-	public void update(float deltaTime)
+	public void update(float deltaTime, Rectangle viewPort)
 	{
 		//stateTime += deltaTime; ???
 		for(Bullet bullet: shots)

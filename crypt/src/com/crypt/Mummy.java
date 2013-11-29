@@ -3,6 +3,8 @@ package com.crypt;
 import java.util.Random;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Mummy extends Entity
@@ -13,17 +15,33 @@ public class Mummy extends Entity
 	{	
 		super(position, animation);
 				
-		CHAR_SPEED = 150;
+		CHAR_SPEED = 100;
 		
+		//Set velocity of mummy at spawn, if 0,0: do it again.
+		velocity.x = randomGenerator.nextInt(2)-1;
+		velocity.y = randomGenerator.nextInt(2)-1;		
 		
-		velocity.y = -1;
+		while (velocity.x == 0.0 && velocity.y == 0.0) 
+		{
+			velocity.x = randomGenerator.nextInt(3)-1;
+			velocity.y = randomGenerator.nextInt(3)-1;
+		}
 		
 		this.levelMap = levelMap;
 	}
 	
-	public void changeDirection()
+
+	public void changeDirection() //Set velocity of mummy on collision with wall, if 0,0: do it again.	
 	{
 		velocity.x = randomGenerator.nextInt(3)-1;
 		velocity.y = randomGenerator.nextInt(3)-1;
+		
+		while (velocity.x == 0.0 && velocity.y == 0.0) 
+		{
+			velocity.x = randomGenerator.nextInt(3)-1;
+			velocity.y = randomGenerator.nextInt(3)-1;
+		}
+		
+		System.out.println(velocity.x+" "+velocity.y);
 	}
 }

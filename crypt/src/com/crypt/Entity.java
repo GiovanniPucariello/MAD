@@ -106,14 +106,14 @@ public abstract class Entity
 	
 	protected boolean removeFromGame()
 	{
-		if (offScreenTimer > 5000) return true;
+		if (offScreenTimer > 5) return true;
 		return false;
 	}
 	
 
 	void draw(SpriteBatch batch)
 	{
-		if (onScreen || !onScreen) 
+		if (onScreen) 
 		{
 			imageSet = up;
 			// Set image set to reflect movement

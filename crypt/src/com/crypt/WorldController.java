@@ -35,9 +35,9 @@ public class WorldController implements InputProcessor
 		// instantiate TreasureRegister
 		treasureSites = new TreasureRegister(levelMap, assets.getTreasureImages());
 		// make a bullet Register
-		bulletreg = new BulletRegister(this, levelMap, assets.getBulletAnim(), viewPort);
+		bulletreg = new BulletRegister(this, levelMap, assets.getBulletAnim());
 		// Instantiate MonsterRegister
-		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim(), viewPort);
+		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim());
 		// Setup input detection to this class
 		Gdx.input.setInputProcessor(this);	
 	}
@@ -57,9 +57,9 @@ public class WorldController implements InputProcessor
 		// call all world objects to update themselves
 		character.update(deltaTime);
 		
-		monsterRegister.update(deltaTime);
+		monsterRegister.update(deltaTime, viewPort);
 		
-		bulletreg.update(deltaTime);
+		bulletreg.update(deltaTime, viewPort);
 		
 		// update the screen area to be rendered
 		viewPort = renderer.updateViewport();
