@@ -50,7 +50,7 @@ public abstract class Entity
 	protected float offScreenValue = 5;
 	
 	// time interval for random changes of direction
-	protected float randomInterval = 2.5f;
+	protected float randomInterval = 1f;
 	protected float randomIntervalTimer = 0;
 	
 	// animation collection indexed as shown below
@@ -88,7 +88,7 @@ public abstract class Entity
 		// update statetime
 		stateTime += deltaTime;
 		
-		randomInterval += deltaTime;
+		randomIntervalTimer += deltaTime;
 		if (randomIntervalTimer > randomInterval)
 		{
 			randomIntervalTimer = 0;

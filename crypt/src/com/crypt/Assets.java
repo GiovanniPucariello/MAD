@@ -13,7 +13,7 @@ public class Assets
 	private EntityAnimations bullet = new EntityAnimations("data/BulletSpriteSmall.png",3,1f, 6, 6);
 	private EntityAnimations openingDoor = new EntityAnimations("data/TempDoorOpening.png",0,0.1f, Constant.BLOCK_SIZE * 2, Constant.BLOCK_SIZE *2);
 	private EntityAnimations charTransport = new EntityAnimations("data/ManTeleport.png",0,0.007f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
-	private EntityAnimations spawnSiteFlash = new EntityAnimations("data/WhiteFlash.png",0,0.007f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
+	private EntityAnimations spawnSiteClouds = new EntityAnimations("data/SpawnSprite.png",0,0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
 	
 	private TextureRegion closedDoor = new TextureRegion(new Texture(Gdx.files.internal("data/TempDoor2.png")));
 	private TextureRegion[] treasure = new TextureRegion[10];
@@ -65,9 +65,9 @@ public class Assets
 		return key;
 	}
 	
-	public Animation[] getSpawnSiteFlash()
+	public Animation[] getSpawnSiteClouds()
 	{
-		return spawnSiteFlash.getAnimations();
+		return spawnSiteClouds.getAnimations();
 	}
 	
 	public Animation[] getOpeningDoor()

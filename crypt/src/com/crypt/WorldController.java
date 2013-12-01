@@ -136,8 +136,8 @@ public class WorldController implements InputProcessor
 	
 	public void characterCaught()
 	{
-		//charHit = true;
-		//character.isHit();
+		charHit = true;
+		character.isHit();
 	}
 
 	private void handleAccelerometer() {

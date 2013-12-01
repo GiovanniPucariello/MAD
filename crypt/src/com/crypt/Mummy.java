@@ -45,7 +45,10 @@ public class Mummy extends Entity
 
 	@Override
 	void randomlyChangeDirection() {
-		// TODO Auto-generated method stub
+		if (randomGenerator.nextInt(5) == 1) 
+		{
+			changeDirection();
+		}
 		
 	}
 }

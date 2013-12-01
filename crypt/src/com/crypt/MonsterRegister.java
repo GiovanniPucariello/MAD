@@ -49,7 +49,7 @@ public class MonsterRegister
 	{
 		timeSinceLastMonster += deltaTime;
 		
-		if (timeSinceLastMonster > 0.2f && randomGenerator.nextInt(10) == 1 & monsters.size <30) 
+		if (timeSinceLastMonster > 0.2f && randomGenerator.nextInt(10) == 1 & monsters.size <10) 
 		{
 			Rectangle spawnsite = new Rectangle(620,1216,64,64);
 			

@@ -17,6 +17,11 @@ public class LevelMap
 	// Level collection of row collections of column collection e.g. cells
 	private Array<Array<IntArray>> level;
 	
+	// Spawn site information (one line for all sites - 
+	// contains (site id - (columns * rows + column position); trigger area x,y,width,height - in blocks; 
+	// max creatures for is site; types of creatures - 1 = mummys, 2 = snake, 4 = bat)
+	private Array<String> spawnSiteInfo;
+	
 	// the current level
 	private int thisLevel = 0;
 	
@@ -39,8 +44,6 @@ public class LevelMap
 	// Door register used to check whether a cell can be entered
 	private DoorRegister doorRegister;
 	
-	// temporary Movement vector
-	private Vector2 tempMovement = new Vector2(0,0);
 	private Vector2 movementStep = new Vector2(0,0);
 	
 	LevelMap()
