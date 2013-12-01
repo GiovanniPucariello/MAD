@@ -75,7 +75,7 @@ public class BulletRegister {
 			Bullet bullet = iter.next();
 			
 			// update bullet
-			bullet.update(deltaTime, viewPort);
+			bullet.update(deltaTime, viewPort, null);
 			
 			// check if hit wall
 			if (bullet.exploding == true)

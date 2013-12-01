@@ -49,11 +49,23 @@ public class MonsterRegister
 	{
 		timeSinceLastMonster += deltaTime;
 		
-		if (timeSinceLastMonster > 0.5f && randomGenerator.nextInt(20) == 1) 
+		if (timeSinceLastMonster > 0.2f && randomGenerator.nextInt(10) == 1 & monsters.size <30) 
 		{
-			Mummy mummy = new Mummy(new Vector2(640,1216), animation, levelMap);
-			monsters.add(mummy);
-			timeSinceLastMonster = 0;
+			Rectangle spawnsite = new Rectangle(620,1216,64,64);
+			
+			// check if spawnsite is empty
+			boolean empty = true;
+			for(Entity monster : monsters)
+			{
+				if (monster.collision(spawnsite)) empty = false;
+			}
+			if (empty == true)
+			{
+				Mummy mummy = new Mummy(new Vector2(640,1216), animation, levelMap);
+				monsters.add(mummy);
+				timeSinceLastMonster = 0;
+			}
+			
 		}
 	}
 	
@@ -71,7 +83,7 @@ public class MonsterRegister
 			Entity monster = iter.next();
 					
 			// update bullet
-			monster.update(deltaTime, viewPort);
+			monster.update(deltaTime, viewPort, monsters);
 			
 			// check if creature is dead
 			if (monster.dead == true)

@@ -115,12 +115,14 @@ public class WorldController implements InputProcessor
 			// character finished the level
 			else
 			{
+				// three second delay
 				if (timer < 3)
 				{
 					timer += Gdx.graphics.getDeltaTime();
 				}
 				else
 				{
+					// change level
 					timer = 0;
 					levelMap.setLevel(currentlevel++);
 					character.init();

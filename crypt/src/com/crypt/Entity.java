@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public abstract class Entity 
 {
@@ -78,9 +79,11 @@ public abstract class Entity
 		
 		this.collisionBotLeftAdjust = collisionBotLeftAdjust;
 		this.collisionTopRightAdjust = collisionTopRightAdjust;
+		
+		currentFrame = animation[up].getKeyFrame(0, true);
 	}
 	
-	public void update(float deltaTime, Rectangle Viewport)
+	public void update(float deltaTime, Rectangle Viewport, Array<Entity> monsters)
 	{
 		// update statetime
 		stateTime += deltaTime;
@@ -101,15 +104,59 @@ public abstract class Entity
 			updateCollisionBounds();
 			
 			// check and validate movement
-			if (levelMap.canIMove(bounds, movement) == false) {
+			if (levelMap.canIMove(bounds, movement) == false) 
+			{
 				// check returned movement to see if it did not move vertically or horizontally
 				if (movement.x == 0 && movement.y == 0) {
 					changeDirection();
 				}
 			}
+			
+			// check if collided with another creature
+			if (collided(monsters))
+			{
+				if (movement.x != 0)
+				{
+					// inverse direction
+					velocity.x *= -1;
+					// undo movement
+					bounds.x += velocity.x * deltaTime * CHAR_SPEED;
+					movement.x = 0;
+				}
+				if (movement.y != 0)
+				{
+					// inverse direction
+					velocity.y *= -1;
+					// undo movement
+					bounds.y += velocity.y * deltaTime * CHAR_SPEED;
+					movement.y = 0;
+				}
+
+			}
+			
 			// check if on screen
 			checkOffScreen(deltaTime, Viewport);
 		}
+	}
+	
+	private boolean collided(Array<Entity> monsters)
+	{
+		// check if collection contains items to check
+		if (monsters != null)
+		{
+			for (int index = 0; index < monsters.size; index++) 
+			{
+		        Entity creature = monsters.get(index);
+				if (creature != this)
+				{
+					if (bounds.overlaps(creature.bounds))
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private void checkOffScreen(float deltaTime, Rectangle Viewport) {
@@ -168,7 +215,7 @@ public abstract class Entity
 					imageSet = left;
 				}
 				// pick correct frame
-				currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
+				if (movement.x !=0 || movement.y !=0 ) currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
 				// draw image
 				batch.draw(currentFrame, bounds.x, bounds.y);
 			}
