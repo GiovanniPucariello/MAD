@@ -66,8 +66,12 @@ public abstract class Entity
 	// used with currentframe in draw method
 	private int imageSet = 0;
 	
-	public Entity(Vector2 position, Animation[] animation, Vector2 collisionBotLeftAdjust, Vector2 collisionTopRightAdjust)
+	// The id of the spawn site that created this creature
+	protected int spawnSiteID;
+	
+	public Entity(Vector2 position, Animation[] animation, Vector2 collisionBotLeftAdjust, Vector2 collisionTopRightAdjust, int spawnSiteID)
 	{
+		this.spawnSiteID = spawnSiteID;
 		this.animation = animation;
 		this.bounds = new Rectangle(0,0, this.animation[0].getKeyFrame(0f).getRegionWidth(),this.animation[0].getKeyFrame(0f).getRegionHeight());
 		// initialise boundary of object

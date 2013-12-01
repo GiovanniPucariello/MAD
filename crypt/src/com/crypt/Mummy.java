@@ -11,11 +11,11 @@ public class Mummy extends Entity
 {	
 	Random randomGenerator = new Random();
 	
-	public Mummy(Vector2 position, Animation[] animation, LevelMap levelMap)
+	public Mummy(Vector2 position, Animation[] animation, LevelMap levelMap, int spawnSiteID)
 	{	
-		super(position, animation, new Vector2(8,2), new Vector2(-8,-2));
+		super(position, animation, new Vector2(8,2), new Vector2(-8,-2), spawnSiteID);
 				
-		CHAR_SPEED = 110;
+		CHAR_SPEED = 100;
 		
 		//Set velocity of mummy at spawn, if 0,0: do it again.
 		velocity.x = randomGenerator.nextInt(2)-1;

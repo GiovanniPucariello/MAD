@@ -20,8 +20,7 @@ public class MonsterRegister
 	private Rectangle charCollisionBounds;
 	
 	public Array<Entity> monsters;
-	private float timeSinceLastMonster = 0;
-	Random randomGenerator = new Random();
+
 	
 	public MonsterRegister(WorldController worldController, LevelMap levelMap, Animation[] animation)
 	{
@@ -40,33 +39,38 @@ public class MonsterRegister
 		monsters.clear();
 	}
 	
-	public int getNumberOfMonsters()
+	public boolean checkAreaClear(Rectangle area)
 	{
-		return monsters.size;
+		boolean empty = true;
+		for(Entity monster : monsters)
+		{
+			if (monster.collision(area)) empty = false;
+		}
+		return empty;
+	}	
+	
+	public int numberOfCreatures(int spawnSite)
+	{
+		int count = 0;
+		for(Entity monster : monsters)
+		{
+			if (monster.spawnSiteID == spawnSite) count++;
+		}
+		return count;
 	}
 	
-	public void addMonster(float deltaTime)
+	public void addMonster(int spawnSiteID,int creatureType, Vector2 position)
 	{
-		timeSinceLastMonster += deltaTime;
-		
-		if (timeSinceLastMonster > 0.2f && randomGenerator.nextInt(10) == 1 & monsters.size <10) 
+		Entity creatureToAdd = null;
+		switch (creatureType)
 		{
-			Rectangle spawnsite = new Rectangle(620,1216,64,64);
-			
-			// check if spawnsite is empty
-			boolean empty = true;
-			for(Entity monster : monsters)
-			{
-				if (monster.collision(spawnsite)) empty = false;
-			}
-			if (empty == true)
-			{
-				Mummy mummy = new Mummy(new Vector2(640,1216), animation, levelMap);
-				monsters.add(mummy);
-				timeSinceLastMonster = 0;
-			}
-			
+		case 1 :	
+			creatureToAdd = new Mummy(position, animation, levelMap, spawnSiteID);
+			break;
 		}
+		
+		// if creature selected add it
+		if (creatureToAdd != null) monsters.add(creatureToAdd);
 	}
 	
 	public void update(float deltaTime, Rectangle viewPort)
@@ -107,8 +111,6 @@ public class MonsterRegister
 				}				
 			}
 		}
-		
-		addMonster(deltaTime);
 	}
 	
 	public void draw(SpriteBatch batch)

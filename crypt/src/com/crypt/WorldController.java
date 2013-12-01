@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -24,6 +25,7 @@ public class WorldController implements InputProcessor
 	public DoorRegister doorSites;
 	private WorldRenderer renderer;
 	public MonsterRegister monsterRegister;
+	public SpawnSiteReg spawnSiteReg;
 	
 	// current level
 	private int currentlevel = 1;
@@ -53,6 +55,8 @@ public class WorldController implements InputProcessor
 		// Instantiate DoorRegister
 		doorSites = new DoorRegister(levelMap, assets.getDoorClosed(), assets.getOpeningDoor());
 		levelMap.setDoorRegister(doorSites);
+		// Instantiate spawnSites
+		spawnSiteReg = new SpawnSiteReg(levelMap, assets.getSpawnSiteClouds(), monsterRegister);
 		// Setup input detection to this class
 		Gdx.input.setInputProcessor(this);	
 	}
@@ -92,6 +96,8 @@ public class WorldController implements InputProcessor
 			character.addkeys(collected);
 			
 			doorSites.pleaseOpenDoor(character.getCharacterBounds(), character.getKeys());
+			
+			spawnSiteReg.update(viewPort, deltaTime, character.getCharacterBounds());
 		}
 		else
 		{
@@ -136,8 +142,8 @@ public class WorldController implements InputProcessor
 	
 	public void characterCaught()
 	{
-		charHit = true;
-		character.isHit();
+		//charHit = true;
+		//character.isHit();
 	}
 
 	private void handleAccelerometer() {

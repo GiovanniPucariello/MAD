@@ -46,7 +46,7 @@ public class DoorRegister
 			{
 				// get block details
 				blockProperty = levelMap.cellProperties(x, y);
-								
+				
 				// check if found a door block
 				if (blockProperty >= Constant.DOORS.DOOR1.getValue() && blockProperty <= Constant.DOORS.DOOR10.getValue())
 				{

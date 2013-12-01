@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -18,9 +19,9 @@ public class LevelMap
 	private Array<Array<IntArray>> level;
 	
 	// Spawn site information (one line for all sites - 
-	// contains (site id - (columns * rows + column position); trigger area x,y,width,height - in blocks; 
+	// contains (site id; trigger area x,y,width,height - in blocks; 
 	// max creatures for is site; types of creatures - 1 = mummys, 2 = snake, 4 = bat)
-	private Array<String> spawnSiteInfo;
+	private Array<String> spawnSiteInfo = new Array<String>();
 	
 	// the current level
 	private int thisLevel = 0;
@@ -57,7 +58,7 @@ public class LevelMap
 			// setup buffer
 			br = file.reader(400);
 			while ((line = br.readLine()) != null)
-			{
+			{				
 				// increment the level
 				numberLevels++;
 				
@@ -77,6 +78,11 @@ public class LevelMap
 				// create the map storage to the size of the map
 				createMap(mapLength[numberLevels]+1,mapHeigth[numberLevels]+1);
 				
+				// read next line
+				line = br.readLine();
+				// store spawn site information
+				spawnSiteInfo.add(line);
+				
 				// initialise loop to read cell data
 				int y = mapHeigth[numberLevels];
 				
@@ -94,6 +100,7 @@ public class LevelMap
 					}
 					y--;
 				}
+				
 				mapHeigth[numberLevels]++;
 			}
 			
@@ -110,6 +117,80 @@ public class LevelMap
 				}
 			}
 		}
+	}
+	
+	public Array<SpawnSite> getSpawnSites(Animation[] animation, MonsterRegister monsterReg)
+	{
+		// create storage
+		Array<SpawnSite> sites = new Array<SpawnSite>();
+		
+		// get info to parse
+		String info = spawnSiteInfo.get(thisLevel);
+		
+		// Setup tokenizer to parse info
+		StringTokenizer token = new StringTokenizer(info, ",");
+		
+		int siteid = 0;
+		int triggerX = 0;
+		int triggerY = 0;
+		int width = 0;
+		int heigth = 0;
+		int maxCreatures = 0;
+		int creatures = 0;
+		Vector2 position = new Vector2(0,0);
+		
+		// parse site info into objects
+		
+		// Spawn site information (one line for all sites - 
+		// contains (site id; trigger area x,y,width,height - in blocks; 
+		// max creatures for is site; types of creatures - 1 = mummies, 2 = snake, 4 = bat)
+		
+		while(token.hasMoreTokens()) 
+		{ 
+			// read one set of site data
+			siteid = Integer.valueOf(token.nextToken());
+			triggerX = Integer.valueOf(token.nextToken());
+			triggerY = Integer.valueOf(token.nextToken());
+			width = Integer.valueOf(token.nextToken());
+			heigth = Integer.valueOf(token.nextToken());
+			maxCreatures = Integer.valueOf(token.nextToken());
+			creatures = Integer.valueOf(token.nextToken());
+			
+/*			System.out.println("siteid : '"+siteid+"'");
+			System.out.println("triggerX : '"+triggerX+"'");
+			System.out.println("triggerY : '"+triggerY+"'");
+			System.out.println("width : '"+width+"'");
+			System.out.println("heigth : '"+heigth+"'");
+			System.out.println("maxCreatures : '"+maxCreatures+"'");
+			System.out.println("creatures : '"+creatures+"'");*/
+
+			if (siteid != 0)
+			{
+				// find position on map
+				position.set(findSpawnSite(siteid));
+				Rectangle triggerBounds = new Rectangle(triggerX * Constant.BLOCK_SIZE, triggerY * Constant.BLOCK_SIZE, width * Constant.BLOCK_SIZE, heigth * Constant.BLOCK_SIZE );
+				sites.add(new SpawnSite(siteid, triggerBounds, position, maxCreatures, creatures, animation, monsterReg));
+				//System.out.println("Spawn Site created: siteID :" +siteid+" triggerBounds("+ triggerBounds.x +","+ triggerBounds.y+","+triggerBounds.width+","+triggerBounds.height+") position("+position.x+","+position.y+") maxCreatures "+maxCreatures);
+			}
+		}		
+		
+		return sites;
+	}
+	
+	private Vector2 findSpawnSite(int id)
+	{
+		for(int x = 0; x < mapLength[thisLevel]; x++)
+		{
+			for(int y = 0; y < mapHeigth[thisLevel]; y++)
+			{				
+				if (id == cellProperties(x,y))
+				{
+					Vector2 position = new Vector2(x * Constant.BLOCK_SIZE,y * Constant.BLOCK_SIZE);
+					return position;
+				}
+			}
+		}
+		return null;		
 	}
 	
 	private void createMap(int x, int y)
@@ -173,7 +254,6 @@ public class LevelMap
 		// check if block is a transport or character start position and if so display a passage block
 		if (block == Constant.BLOCKVALUES.TRANSPORT.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
 		else if (block == Constant.BLOCKVALUES.CHAR_START_POINT.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
-		else if (block == Constant.BLOCKVALUES.SPAWN_SITE.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
 		
 		// check if a treasure block range 30 to 69 (4 blocks up, right, down, left * 10 types of treasure
 		else if (block > 29 && block < 71)
@@ -202,6 +282,12 @@ public class LevelMap
 			}
 		}
 		
+		// check if block is a spawn site
+		else if (block >= 170 && block <= 190)
+		{
+			return Constant.BLOCKVALUES.PASSAGE.getValue();
+		}
+		
 		// next level
 		else if (block == Constant.BLOCKVALUES.NEXT_LEVEL.getValue()) return Constant.BLOCKVALUES.PASSAGE.getValue();
 		
@@ -212,7 +298,7 @@ public class LevelMap
 	{
 		// get block details
 		int block = level.get(thisLevel).get(x).get(y);
-		
+				
 		// check if a treasure type block
 		if (block >= 30 && block <= 70)
 		{
@@ -239,7 +325,7 @@ public class LevelMap
 		}
 				
 		// return 100 SPAWN_SITE if found
-		else if (block == Constant.BLOCKVALUES.SPAWN_SITE.getValue()) return block;
+		else if (block >= 170 && block <= 190) return block;
 		
 		// next level
 		else if (block == Constant.BLOCKVALUES.NEXT_LEVEL.getValue()) return block;
@@ -273,9 +359,6 @@ public class LevelMap
 	
 	public boolean canIMove(Rectangle bounds, Vector2 movement)
 	{
-		// Potential problem if the frame rate is slow.
-		// A entity can move pass an opening in one frame and therefore a check for openings between start and moved to position should be added.
-
 		float x, y, xstep, ystep;
 		int loop = 0;
 		x = movement.x;
