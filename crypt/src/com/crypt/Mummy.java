@@ -13,7 +13,7 @@ public class Mummy extends Entity
 	
 	public Mummy(Vector2 position, Animation[] animation, LevelMap levelMap)
 	{	
-		super(position, animation);
+		super(position, animation, new Vector2(8,2), new Vector2(-8,-2));
 				
 		CHAR_SPEED = 100;
 		
@@ -30,7 +30,7 @@ public class Mummy extends Entity
 		this.levelMap = levelMap;
 	}
 	
-
+	@Override
 	public void changeDirection() //Set velocity of mummy on collision with wall, if 0,0: do it again.	
 	{
 		velocity.x = randomGenerator.nextInt(3)-1;
@@ -41,7 +41,11 @@ public class Mummy extends Entity
 			velocity.x = randomGenerator.nextInt(3)-1;
 			velocity.y = randomGenerator.nextInt(3)-1;
 		}
+	}
+
+	@Override
+	void randomlyChangeDirection() {
+		// TODO Auto-generated method stub
 		
-		System.out.println(velocity.x+" "+velocity.y);
 	}
 }

@@ -1,5 +1,10 @@
 package com.crypt;
 
+import java.util.Iterator;
+import java.util.Random;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -11,31 +16,42 @@ public class MonsterRegister
 	private WorldController worldController;
 	private LevelMap levelMap;
 	private Animation[] animation = new Animation[5];
+	private Sound killedSound;
+	private Rectangle charCollisionBounds;
 	
 	public Array<Entity> monsters;
 	private float timeSinceLastMonster = 0;
+	Random randomGenerator = new Random();
 	
 	public MonsterRegister(WorldController worldController, LevelMap levelMap, Animation[] animation)
 	{
 		// Create monster array
 		this.monsters = new Array<Entity>();
 		
+		killedSound = Gdx.audio.newSound(Gdx.files.internal("data/Splat.mp3"));
+		
 		this.worldController = worldController;
 		this.levelMap = levelMap;
 		this.animation = animation;
-		
-		// Instantiate Mummy
-		Mummy mummy = new Mummy(new Vector2(96,1200), animation, levelMap);
-		monsters.add(mummy);
+	}
+	
+	public void init()
+	{
+		monsters.clear();
+	}
+	
+	public int getNumberOfMonsters()
+	{
+		return monsters.size;
 	}
 	
 	public void addMonster(float deltaTime)
 	{
 		timeSinceLastMonster += deltaTime;
 		
-		if (timeSinceLastMonster > 5.0f) 
+		if (timeSinceLastMonster > 0.5f && randomGenerator.nextInt(20) == 1) 
 		{
-			Mummy mummy = new Mummy(new Vector2(96,1200), animation, levelMap);
+			Mummy mummy = new Mummy(new Vector2(640,1216), animation, levelMap);
 			monsters.add(mummy);
 			timeSinceLastMonster = 0;
 		}
@@ -43,17 +59,44 @@ public class MonsterRegister
 	
 	public void update(float deltaTime, Rectangle viewPort)
 	{
-		//Loop through array of monsters and update
-		for (Entity monster : monsters)
-		{
+		// get characters position
+		charCollisionBounds = worldController.getCharacterCollisionBounds();
+		
+		// Loop through monsters and update
+		// setup iterator so elements can be removed
+		Iterator<Entity> iter = monsters.iterator();
+				
+		// check that an item is available
+		while (iter.hasNext()) {
+			Entity monster = iter.next();
+					
+			// update bullet
 			monster.update(deltaTime, viewPort);
-		} 
+			
+			// check if creature is dead
+			if (monster.dead == true)
+			{
+				iter.remove();
+			}
+			else
+			{
+				// check if the monster has been off screen for the required time
+				if (monster.removeFromGame() == true)
+				{
+					iter.remove();
+				}
+				else
+				{
+					// check if monster has catch the character
+					if (monster.collision(charCollisionBounds) == true)
+					{
+						worldController.characterCaught();
+					}
+				}				
+			}
+		}
 		
-		//Add new monster to array
 		addMonster(deltaTime);
-		
-		//Check if removal is needed.
-		offScreenRemove();
 	}
 	
 	public void draw(SpriteBatch batch)
@@ -64,26 +107,29 @@ public class MonsterRegister
 		}
 	}
 	
-	private void offScreenRemove()
-	{
-		for (Entity monster: monsters)
-		{
-			//Check in Entity if 5 seconds has past since monster went off screen.
-			if (monster.removeFromGame() == true)
-			{
-				System.out.println("Removing from array.");
-				monsters.removeValue(monster, true);
-			}
-		}
-	}
-	
 	public boolean caughtCharacter(Vector2 position, int width, int height)
 	{
 		return false;
 	}
 	
-	public boolean beenShot(Vector2 position, int length)
+	public boolean beenShot(Rectangle bounds)
 	{
-		return false;
+		boolean hitFlag = false;
+		for (Entity monster: monsters)
+		{
+			if (monster.collision(bounds) == true)
+			{
+				monster.setHit(true);
+				hitFlag = true;
+			}
+		}
+		
+		if (hitFlag == true)
+		{
+			// play creature killed sound
+			killedSound.play();
+		}
+		
+		return hitFlag;
 	}
 }

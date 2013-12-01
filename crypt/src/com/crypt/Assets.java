@@ -8,9 +8,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Assets 
 {
 	// asset objects
-	private EntityAnimations character = new EntityAnimations("data/ManSprites.png", 4, 0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
-	private EntityAnimations mummy = new EntityAnimations("data/MummySprite.png",3,0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
-	private EntityAnimations bullet = new EntityAnimations("data/BulletSprite.png",3,0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
+	private EntityAnimations character = new EntityAnimations("data/ManSprites.png", 9, 0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
+	private EntityAnimations mummy = new EntityAnimations("data/MummySprite.png",4,0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
+	private EntityAnimations bullet = new EntityAnimations("data/BulletSpriteSmall.png",3,1f, 6, 6);
 	private EntityAnimations openingDoor = new EntityAnimations("data/TempDoorOpening.png",0,0.1f, Constant.BLOCK_SIZE * 2, Constant.BLOCK_SIZE *2);
 	private EntityAnimations charTransport = new EntityAnimations("data/ManTeleport.png",0,0.007f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
 	private EntityAnimations spawnSiteFlash = new EntityAnimations("data/WhiteFlash.png",0,0.007f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);

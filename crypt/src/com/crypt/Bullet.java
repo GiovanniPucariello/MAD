@@ -9,16 +9,27 @@ public class Bullet extends Entity{
 	public boolean exploding = false;
 
 	public Bullet(Vector2 position, Animation[] animation, LevelMap levelMap, Vector2 bulletDirection) {
-		super(position, animation);
-		
-		CHAR_SPEED = 300;
+		super(position, animation, new Vector2(0,0), new Vector2(0,0));
+		CHAR_SPEED = 600;
         this.velocity = bulletDirection;
         this.levelMap = levelMap;
         this.bounds = new Rectangle(position.x, position.y, 16,16);
 	}
     
-	protected void changeDirection() {
+	@Override
+	public void changeDirection() 
+	{
 		exploding = true;
-		System.out.println("The Bullet has hit a wall");
-	}	
+	}
+	
+	public Rectangle getBounds()
+	{
+		return bounds;
+	}
+
+	@Override
+	void randomlyChangeDirection() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -35,8 +35,12 @@ public class Character
 	private Rectangle bounds;
 	private Rectangle transbounds = new Rectangle(0,0,0,0);
 	
+	// size for collision checking 
+	protected Rectangle collisionBounds = new Rectangle(0,0,0,0);
+	
 	// players state
 	private boolean hit = false;
+	private boolean isDead = false;
 	private boolean transporting = false;
 	private boolean appearing = false;
 	private boolean appeared = false;
@@ -55,6 +59,9 @@ public class Character
 	// animation class
 	private Animation[] animation = new Animation[5];
 	private Animation[] teleport = new Animation[1];
+	
+	// Sounds
+	private Sound DyingSound;
 	
 	// animation indexes
 	private int up = 0;
@@ -86,10 +93,11 @@ public class Character
 		// initialise stateTime
 		stateTime = 0f;
 		
-		// It been necessary to reduce the size by 3 pixels to prevent it moving pass opening in a single frame update
-		// if further works required to this then see LevelMap - canIMove method (needs to check for openings between start and moved to position.
 		bounds = new Rectangle(0,0, this.animation[0].getKeyFrame(0f).getRegionWidth()-1,this.animation[0].getKeyFrame(0f).getRegionHeight()-1);
-		currentFrame = animation[stood].getKeyFrame(stateTime, true);
+		imageSet = stood;
+		currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
+
+		DyingSound = Gdx.audio.newSound(Gdx.files.internal("data/Dying.mp3"));
 	}
 	
 	public void init()
@@ -99,12 +107,39 @@ public class Character
 		// set bounds position to position
 		bounds.x = position.x;
 		bounds.y = position.y;
-		collectedKeys.clear();
+		
+		// reset hit and dead state
+		hit = false;
+		isDead = false;
+		
+		// reset image
+		imageSet = stood;
+		currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
+		
+		// reset movement
+		movement.set(0,0);
+		velocity.set(0,0);
 	}
 	
 	public Array<Key> getKeys()
 	{
 		return collectedKeys;
+	}
+	
+	public void isHit()
+	{
+		hit = true;
+		// change to image set to fade out
+		imageSet += 5;
+		// reset clock for fading images
+		stateTime = 0;
+		// play dying sound
+		DyingSound.play();
+	}
+	
+	public boolean isDead()
+	{
+		return isDead;
 	}
 	
 	public Vector2 getCharacterPosition()
@@ -115,6 +150,11 @@ public class Character
 	public Rectangle getCharacterBounds()
 	{
 		return bounds;
+	}
+	
+	public Rectangle getCollisionBounds()
+	{
+		return collisionBounds;
 	}
 	
 	void moveRight()
@@ -151,139 +191,163 @@ public class Character
 	{
 		// update statetime
 		stateTime += deltaTime;
-		if (!transporting) 
+		if (!hit)
 		{
-			// calculate the movement by multiplying the velocity vector by time passed to get the movement
-			movement.set(velocity.tmp().mul(deltaTime * CHAR_SPEED));
-			// check if character should be transported.
-			transbounds.set(bounds);
-			if (levelMap.transportMe(transbounds, movement) == true) 
+			if (!transporting) 
 			{
-				// start transport
-				transporting = true;
-				if (transbounds.y > bounds.y)
+				// calculate the movement by multiplying the velocity vector by time passed to get the movement
+				movement.set(velocity.tmp().mul(deltaTime * CHAR_SPEED));
+				// check if character should be transported.
+				transbounds.set(bounds);
+				if (levelMap.transportMe(transbounds, movement) == true) 
 				{
-					transVelocity.y = 1;
-					
+					// start transport
+					transporting = true;
+					if (transbounds.y > bounds.y)
+					{
+						transVelocity.y = 1;
+						
+					}
+					else
+					{
+						transVelocity.y = -1;
+					}
 				}
 				else
 				{
-					transVelocity.y = -1;
+					// check and validate movement
+					levelMap.canIMove(bounds, movement);
 				}
 			}
 			else
 			{
-				// check and validate movement
-				levelMap.canIMove(bounds, movement);
-			}
-		}
-		else
-		{
-			if (appearing == false) 
-			{
-				// calculate the movement by multiplying the velocity vector by time passed to get the movement
-				movement.set(transVelocity.tmp().mul(deltaTime * TRANS_SPEED));
-				
-				// update transport position
-				bounds.x += movement.x;
-				bounds.y += movement.y;
+				if (appearing == false) 
+				{
+					// calculate the movement by multiplying the velocity vector by time passed to get the movement
+					movement.set(transVelocity.tmp().mul(deltaTime * TRANS_SPEED));
+					
+					// update transport position
+					bounds.x += movement.x;
+					bounds.y += movement.y;
+		
+					// not appeared yet
 	
-				// not appeared yet
-
-				// check direction of travel & check if arrived at the destination
-				if (transVelocity.y > 0 && bounds.y > transbounds.y) 
-				{
-					// arrived / start appearing
-					appearing = true;
-					bounds.x = transbounds.x;
-					bounds.y = transbounds.y;
-					transportsound.play();
-				} 
-				else if (transVelocity.y < 0 && bounds.y < transbounds.y) 
-				{
-					// arrived / start appearing
-					appearing = true;
-					bounds.x = transbounds.x;
-					bounds.y = transbounds.y;
-					transportsound.play();
+					// check direction of travel & check if arrived at the destination
+					if (transVelocity.y > 0 && bounds.y > transbounds.y) 
+					{
+						// arrived / start appearing
+						appearing = true;
+						bounds.x = transbounds.x;
+						bounds.y = transbounds.y;
+						transportsound.play();
+					} 
+					else if (transVelocity.y < 0 && bounds.y < transbounds.y) 
+					{
+						// arrived / start appearing
+						appearing = true;
+						bounds.x = transbounds.x;
+						bounds.y = transbounds.y;
+						transportsound.play();
+					}
 				}
-			}
-			else
-			{
-				if (appeared)
+				else
 				{
-					// transport over reset state
-					transporting = false;
-					appearing = false;
-					appeared = false;
-					appearingTime = 0;
+					if (appeared)
+					{
+						// transport over reset state
+						transporting = false;
+						appearing = false;
+						appeared = false;
+						appearingTime = 0;
+					}
 				}
 			}
 		}
 		// update character position to bounds position
 		position.x = bounds.x;
 		position.y = bounds.y;
+		
+		// update collision bounds
+		// adjust collision size
+		collisionBounds.x = bounds.x + 11;
+		collisionBounds.y = bounds.y + 2;
+		// subtraction includes additions to x & y 
+		collisionBounds.width = bounds.width - 22;
+		collisionBounds.height =  bounds.height -4;
 	}
 	
 	void draw(SpriteBatch batch)
 	{
-		if (!transporting) 
+		if (hit)
 		{
-			// Set image set to reflex movement
-			if (movement.y > 0) 
+			// dying
+			currentFrame = animation[imageSet].getKeyFrame(stateTime, false);
+			if (animation[imageSet].isAnimationFinished(stateTime))
 			{
-				imageSet = up;
-				stoodtimer = 0;
-			}
-			else if (movement.y < 0) 
-			{
-				imageSet = down;
-				stoodtimer = 0;
-			} 
-			else if (movement.x > 1) 
-			{
-				imageSet = right;
-				stoodtimer = 0;
-			}
-			else if (movement.x < -1) 
-			{
-				imageSet = left;
-				stoodtimer = 0;
-			}
-			else
-			{
-				// increment delay timer				
-				stoodtimer += Gdx.graphics.getDeltaTime();
-				
-				// check if stood for over 1.5 seconds
-				if (stoodtimer > 1.5)
-				{
-					// reset timer and select a stood position
-					stoodtimer = 0;
-					currentFrame = animation[stood].getKeyFrame(stateTime, true);
-				}
-			}
-			
-			// pick correct frame
-			if (movement.x !=0 || movement.y != 0) currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
-			// draw image
-			batch.draw(currentFrame, position.x, position.y);
-		}
-		else if (appearing == true)
-		{
-			// update animation time state
-			appearingTime += Gdx.graphics.getDeltaTime();
-			// pick correct frame
-			currentFrame = teleport[0].getKeyFrame(appearingTime, false);
-			if (teleport[0].isAnimationFinished(appearingTime))
-			{
-				appeared = true;
-
+				if (stateTime > 3f) isDead = true;
 			}
 			// draw animation
 			batch.draw(currentFrame, position.x, position.y);
 		}
-			
+		else
+		{
+			if (!transporting) 
+			{
+				// Set image set to reflex movement
+				if (movement.y > 0) 
+				{
+					imageSet = up;
+					stoodtimer = 0;
+				}
+				else if (movement.y < 0) 
+				{
+					imageSet = down;
+					stoodtimer = 0;
+				} 
+				else if (movement.x > 1) 
+				{
+					imageSet = right;
+					stoodtimer = 0;
+				}
+				else if (movement.x < -1) 
+				{
+					imageSet = left;
+					stoodtimer = 0;
+				}
+				else
+				{
+					// increment delay timer				
+					stoodtimer += Gdx.graphics.getDeltaTime();
+					
+					// check if stood for over 1.5 seconds
+					if (stoodtimer > 1.5)
+					{
+						// reset timer and select a stood position
+						stoodtimer = 0;
+						currentFrame = animation[stood].getKeyFrame(stateTime, true);
+					}
+				}
+				
+				// pick correct frame
+				if (movement.x !=0 || movement.y != 0) currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
+				// draw image
+				batch.draw(currentFrame, position.x, position.y);
+			}
+			else if (appearing == true)
+			{
+				// update animation time state
+				appearingTime += Gdx.graphics.getDeltaTime();
+				// pick correct frame
+				currentFrame = teleport[0].getKeyFrame(appearingTime, false);
+				if (teleport[0].isAnimationFinished(appearingTime))
+				{
+					appeared = true;
+
+				}
+				// draw animation
+				batch.draw(currentFrame, position.x, position.y);
+			}
+		}	
 	}
 	
 	public void addkeys(Array<Key> keys)

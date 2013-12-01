@@ -24,7 +24,12 @@ public class WorldController implements InputProcessor
 	public DoorRegister doorSites;
 	private WorldRenderer renderer;
 	public MonsterRegister monsterRegister;
+	
+	// current level
 	private int currentlevel = 1;
+	
+	private boolean charHit = false;
+	
 	private float timer = 0f;
 	
 	public WorldController() 
@@ -42,13 +47,12 @@ public class WorldController implements InputProcessor
 		// instantiate TreasureRegister
 		treasureSites = new TreasureRegister(levelMap, assets.getTreasureImages());
 		// make a bullet Register
-		bulletreg = new BulletRegister(this, levelMap, assets.getBulletAnim());
+		// Instantiate MonsterRegister
+		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim());
+		bulletreg = new BulletRegister(this, levelMap, monsterRegister, assets.getBulletAnim());
 		// Instantiate DoorRegister
 		doorSites = new DoorRegister(levelMap, assets.getDoorClosed(), assets.getOpeningDoor());
 		levelMap.setDoorRegister(doorSites);
-		
-		// Instantiate MonsterRegister
-		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim());
 		// Setup input detection to this class
 		Gdx.input.setInputProcessor(this);	
 	}
@@ -60,11 +64,12 @@ public class WorldController implements InputProcessor
 		treasureSites.init();
 		keyRegister.init();
 		doorSites.init();
+		charHit = false;
 	}
 	
 	public void update (float deltaTime) 
 	{
-		if (character.isLevelfinished() == false) 
+		if (character.isLevelfinished() == false && charHit == false) 
 		{
 			// check for Accelerometer
 			handleAccelerometer();
@@ -90,21 +95,47 @@ public class WorldController implements InputProcessor
 		}
 		else
 		{
-			// 3 second delay
-			if (timer < 3)
+			// check if character caught
+			if (charHit == true)
 			{
-				timer += Gdx.graphics.getDeltaTime();
+				// update character to die
+				character.update(deltaTime);
+				if (character.isDead())
+				{
+					// **************************** need to decrement lives here
+					// reset character
+					charHit = false;
+					character.init();
+					// reset monsters and bullets
+					monsterRegister.init();
+					bulletreg.init();
+					
+				}
 			}
+			// character finished the level
 			else
 			{
-				timer = 0;
-				levelMap.setLevel(currentlevel++);
-				character.init();
-				treasureSites.init();
-				keyRegister.init();
-				doorSites.init();		
-			}				
+				if (timer < 3)
+				{
+					timer += Gdx.graphics.getDeltaTime();
+				}
+				else
+				{
+					timer = 0;
+					levelMap.setLevel(currentlevel++);
+					character.init();
+					treasureSites.init();
+					keyRegister.init();
+					doorSites.init();		
+				}				
+			}
 		}
+	}
+	
+	public void characterCaught()
+	{
+		//charHit = true;
+		//character.isHit();
 	}
 
 	private void handleAccelerometer() {
@@ -155,37 +186,30 @@ public class WorldController implements InputProcessor
 		// Call bulletRegister class from here and add bullet
 		Vector2 bulletStart = getCharacterPosition();
 		Vector2 bulletDirection = new Vector2(0,0);
-		System.out.println("Bullet Starting pos: " + bulletStart);
-		System.out.println("Char Position: " + getCharacterPosition());
 
 		if (x> Math.abs(y))
 		{
-				System.out.println("firing right");
 				bulletDirection.x = 1;
 				bulletreg.add(bulletDirection,bulletStart);
 		} 
 		if ((-x)> Math.abs(y))
 		{
-				System.out.println("firing left");
 				bulletDirection.x = -1;
 				bulletreg.add(bulletDirection,bulletStart);
 
 		}
 		if (y> Math.abs(x))
 		{
-			System.out.println("firing Up");
 			bulletDirection.y = -1;
 			bulletreg.add(bulletDirection,bulletStart);
 		}
 		if ((-y)> Math.abs(x))
 		{
-			System.out.println("firing Down");
 			bulletDirection.y = 1;
 			bulletreg.add(bulletDirection,bulletStart);
 		}
 		if(y==x)
 		{
-			System.out.println("firing EVERYWHERE!!!");
 			bulletDirection.x = 1;
 			bulletDirection.y = 0;
 			bulletreg.add(bulletDirection,bulletStart);
@@ -208,6 +232,11 @@ public class WorldController implements InputProcessor
 		return character.getCharacterPosition();
 	}
 	
+	public Rectangle getCharacterCollisionBounds()
+	{
+		return character.getCollisionBounds();
+	}
+	
 	public LevelMap getLevelMap()
 	{
 		return levelMap;
@@ -228,18 +257,6 @@ public class WorldController implements InputProcessor
 			break;
 		case Keys.DOWN:
 			character.moveDown();
-			break;
-		case Keys.C:
-			levelMap.setLevel(0);
-			character.init();
-			break;
-		case Keys.D:
-			levelMap.setLevel(1);
-			character.init();
-			break;	
-		case Keys.S:
-			levelMap.setLevel(2);
-			character.init();
 			break;
 		case Keys.X:
 			addbullet(Gdx.graphics.getWidth() /2 +100, 0);
