@@ -2,6 +2,8 @@ package com.crypt;
 
 import java.util.Random;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -49,6 +51,12 @@ public class SpawnSite
 	// frame to render
 	private TextureRegion currentFrame;
 	
+	// sounds
+	private Sound spawnSound;
+	
+	// monster refer
+	private Entity monsterRef;
+	
 	SpawnSite(int id, Rectangle trigger, Vector2 position, int maxCreatures, int spawnTypes, Animation[] animation, MonsterRegister monsterReg)
 	{
 		this.id = id;
@@ -59,7 +67,10 @@ public class SpawnSite
 		this.monsterReg = monsterReg;
 		this.position.set(position);
 		// set a margin around the spawn are to ensure it clear before creating a new creature
-		spawnArea.set(position.x - 20, position.y -20, Constant.BLOCK_SIZE + 40, Constant.BLOCK_SIZE + 40);
+		spawnArea.set(position.x , position.y , Constant.BLOCK_SIZE , Constant.BLOCK_SIZE );
+		
+		// spawn sound
+		spawnSound = Gdx.audio.newSound(Gdx.files.internal("data/SpawnCreature.mp3"));
 	}
 	
 	public void update(Rectangle viewPort, Rectangle characterBounds, float deltaTime)
@@ -91,11 +102,28 @@ public class SpawnSite
 			int currentCount = monsterReg.numberOfCreatures(id);
 			if (currentCount < maxCreatures)
 			{
-				if ((timeSinceLastMonster > (currentCount / maxCreatures * 2)) && (randomGenerator.nextInt(maxCreatures*3) < currentCount+1*2)) 
+				if (currentCount < maxCreatures / 3) 
 				{
-					// reset timer
 					timeSinceLastMonster = 0;
 					spawningNow = true;
+					spawnSound.play();
+					int creatureType = picACreature();
+					monsterRef = monsterReg.addMonster(id, creatureType,
+							position, false);
+				}
+				else
+				{
+					if ((timeSinceLastMonster > 1 + (3*(currentCount / maxCreatures)))
+							) // (currentCount / maxCreatures * 6) && (randomGenerator.nextInt(maxCreatures * 6) < currentCount + 1 * 2)
+					{
+						// reset timer
+						timeSinceLastMonster = 0;
+						spawningNow = true;
+						spawnSound.play();
+						int creatureType = picACreature();
+						monsterRef = monsterReg.addMonster(id, creatureType,
+								position, false);
+					}
 				}
 			}
 		}
@@ -104,7 +132,22 @@ public class SpawnSite
 	private int picACreature()
 	{
 		// temporary 1 = mummy; 2 = snake; 4 = bat;
-		return 1;
+		int creatureType = randomGenerator.nextInt(3);
+		
+		if (creatureType == 0) 
+		{	
+			creatureType = 1;
+		}
+		else if (creatureType == 1)
+		{ 
+			creatureType = 2;
+		}
+		else if (creatureType == 2)
+		{ 
+			creatureType = 4;
+		}
+		
+		return creatureType;
 	}
 	
 	public void draw(SpriteBatch batch, float deltaTime)
@@ -118,9 +161,9 @@ public class SpawnSite
 			{
 				spawningNow = false;
 				// add creature
-				int creatureType = picACreature();
+
 				stateTime = 0;
-				monsterReg.addMonster(id, creatureType, position);
+				monsterRef.active = true;
 			}
 			// draw animation
 			batch.draw(currentFrame, position.x, position.y);

@@ -60,7 +60,7 @@ public class BulletRegister {
 			firefrom.add(Constant.BLOCK_SIZE/2 * velocity.x - 6, Constant.BLOCK_SIZE/2 * velocity.y -6);
 
 			// add shot
-			shots.add(new Bullet(firefrom, animation, levelMap, velocity));
+			shots.add(new Bullet(firefrom, animation, levelMap, velocity, true));
 			lastFiredTime = TimeUtils.nanoTime();
 		}
 	}

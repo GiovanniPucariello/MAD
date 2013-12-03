@@ -3,23 +3,20 @@ package com.crypt;
 import java.util.Random;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class Mummy extends Entity
+public class Bat extends Entity
 {	
 	Random randomGenerator = new Random();
-	private Character character;
 	private WorldController worldController;
 	
-	public Mummy(WorldController worldController, Vector2 position, Animation[] animation, LevelMap levelMap, int spawnSiteID, boolean active)
+	public Bat(WorldController worldController, Vector2 position, Animation[] animation, LevelMap levelMap, int spawnSiteID, boolean active)
 	{	
 		super(position, animation, new Vector2(8,2), new Vector2(-8,-2), spawnSiteID, active);
 		
-		CHAR_SPEED = 80;
+		CHAR_SPEED = 200;
 		
-		//Set velocity of mummy at spawn, if 0,0: do it again.
+		//Set velocity of bat at spawn, if 0,0: do it again.
 		velocity.x = randomGenerator.nextInt(2)-1;
 		velocity.y = randomGenerator.nextInt(2)-1;		
 		
@@ -34,11 +31,11 @@ public class Mummy extends Entity
 	}
 	
 	@Override
-	public void changeDirection() 	
-	{	
+	public void changeDirection() //Set velocity of bat on collision with wall, if 0,0: do it again.	
+	{
 		Vector2 characterPosition = new Vector2(worldController.getCharacterPosition());//character.getCharacterPosition();
 		
-		if(randomGenerator.nextInt(5) < 4)
+		if(randomGenerator.nextInt(5) < 1)
 		{
 			if (bounds.x < characterPosition.x)
 			{
@@ -76,11 +73,11 @@ public class Mummy extends Entity
 	}
 
 	@Override
-	void randomlyChangeDirection() 
-	{	
+	void randomlyChangeDirection() {
 		if (randomGenerator.nextInt(5) == 1) 
 		{
 			changeDirection();
 		}
+		
 	}
 }

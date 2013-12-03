@@ -8,8 +8,8 @@ public class Bullet extends Entity{
 
 	public boolean exploding = false;
 
-	public Bullet(Vector2 position, Animation[] animation, LevelMap levelMap, Vector2 bulletDirection) {
-		super(position, animation, new Vector2(0,0), new Vector2(0,0),0);
+	public Bullet(Vector2 position, Animation[] animation, LevelMap levelMap, Vector2 bulletDirection, boolean active) {
+		super(position, animation, new Vector2(0,0), new Vector2(0,0),0, active);
 		CHAR_SPEED = 600;
         this.velocity = bulletDirection;
         this.levelMap = levelMap;

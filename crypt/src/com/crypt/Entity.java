@@ -30,6 +30,7 @@ public abstract class Entity
 	
 	// flag on screen
 	protected boolean onScreen;
+	protected boolean active = false;
 	
 	// reference to level map
 	protected LevelMap levelMap;
@@ -69,11 +70,13 @@ public abstract class Entity
 	// The id of the spawn site that created this creature
 	protected int spawnSiteID;
 	
-	public Entity(Vector2 position, Animation[] animation, Vector2 collisionBotLeftAdjust, Vector2 collisionTopRightAdjust, int spawnSiteID)
+	public Entity(Vector2 position, Animation[] animation, Vector2 collisionBotLeftAdjust, Vector2 collisionTopRightAdjust, int spawnSiteID, boolean active)
 	{
 		this.spawnSiteID = spawnSiteID;
 		this.animation = animation;
 		this.bounds = new Rectangle(0,0, this.animation[0].getKeyFrame(0f).getRegionWidth(),this.animation[0].getKeyFrame(0f).getRegionHeight());
+		this.active = active;
+		
 		// initialise boundary of object
 		bounds.x = position.x;
 		bounds.y = position.y;
@@ -89,57 +92,51 @@ public abstract class Entity
 	
 	public void update(float deltaTime, Rectangle Viewport, Array<Entity> monsters)
 	{
-		// update statetime
-		stateTime += deltaTime;
-		
-		randomIntervalTimer += deltaTime;
-		if (randomIntervalTimer > randomInterval)
-		{
-			randomIntervalTimer = 0;
-			randomlyChangeDirection();
-		}
-		
-		// if not hit
-		if (!hit) 
-		{
-			// calculate the movement by multiplying the velocity vector by time passed to get the movement
-			movement.set(velocity.tmp().mul(deltaTime * CHAR_SPEED));
-			
-			updateCollisionBounds();
-			
-			// check and validate movement
-			if (levelMap.canIMove(bounds, movement) == false) 
-			{
-				// check returned movement to see if it did not move vertically or horizontally
-				if (movement.x == 0 && movement.y == 0) {
-					changeDirection();
-				}
+		if (active) {
+			// update statetime
+			stateTime += deltaTime;
+			randomIntervalTimer += deltaTime;
+			if (randomIntervalTimer > randomInterval) {
+				randomIntervalTimer = 0;
+				randomlyChangeDirection();
 			}
-			
-			// check if collided with another creature
-			if (collided(monsters))
-			{
-				if (movement.x != 0)
-				{
-					// inverse direction
-					velocity.x *= -1;
-					// undo movement
-					bounds.x += velocity.x * deltaTime * CHAR_SPEED;
-					movement.x = 0;
-				}
-				if (movement.y != 0)
-				{
-					// inverse direction
-					velocity.y *= -1;
-					// undo movement
-					bounds.y += velocity.y * deltaTime * CHAR_SPEED;
-					movement.y = 0;
+			// if not hit
+			if (!hit) {
+				// calculate the movement by multiplying the velocity vector by time passed to get the movement
+				movement.set(velocity.tmp().mul(deltaTime * CHAR_SPEED));
+
+				updateCollisionBounds();
+
+				// check and validate movement
+				if (levelMap.canIMove(bounds, movement) == false) {
+					// check returned movement to see if it did not move vertically or horizontally
+					if (movement.x == 0 && movement.y == 0) {
+						changeDirection();
+					}
 				}
 
+				// check if collided with another creature
+				if (collided(monsters)) {
+					if (movement.x != 0) {
+						// inverse direction
+						velocity.x *= -1;
+						// undo movement
+						bounds.x += velocity.x * deltaTime * CHAR_SPEED;
+						movement.x = 0;
+					}
+					if (movement.y != 0) {
+						// inverse direction
+						velocity.y *= -1;
+						// undo movement
+						bounds.y += velocity.y * deltaTime * CHAR_SPEED;
+						movement.y = 0;
+					}
+
+				}
+
+				// check if on screen
+				checkOffScreen(deltaTime, Viewport);
 			}
-			
-			// check if on screen
-			checkOffScreen(deltaTime, Viewport);
 		}
 	}
 	
@@ -203,36 +200,36 @@ public abstract class Entity
 
 	void draw(SpriteBatch batch)
 	{
-		if (onScreen) 
-		{
-			if (!hit)
-			{
-				imageSet = up;
-				// Set image set to reflect movement
-				if (movement.y > 0) {
+		if (active) {
+			if (onScreen) {
+				if (!hit) {
 					imageSet = up;
-				} else if (movement.y < 0) {
-					imageSet = down;
-				} else if (movement.x > 0) {
-					imageSet = right;
-				} else if (movement.x < 0) {
-					imageSet = left;
+					// Set image set to reflect movement
+					if (movement.y > 0) {
+						imageSet = up;
+					} else if (movement.y < 0) {
+						imageSet = down;
+					} else if (movement.x > 0) {
+						imageSet = right;
+					} else if (movement.x < 0) {
+						imageSet = left;
+					}
+					// pick correct frame
+					if (movement.x != 0 || movement.y != 0)
+						currentFrame = animation[imageSet].getKeyFrame(
+								stateTime, true);
+					// draw image
+					batch.draw(currentFrame, bounds.x, bounds.y);
+				} else {
+					// pick correct frame
+					currentFrame = animation[dying].getKeyFrame(stateTime,
+							false);
+					if (animation[dying].isAnimationFinished(stateTime)) {
+						dead = true;
+					}
+					// draw animation
+					batch.draw(currentFrame, bounds.x, bounds.y);
 				}
-				// pick correct frame
-				if (movement.x !=0 || movement.y !=0 ) currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
-				// draw image
-				batch.draw(currentFrame, bounds.x, bounds.y);
-			}
-			else
-			{
-				// pick correct frame
-				currentFrame = animation[dying].getKeyFrame(stateTime, false);
-				if (animation[dying].isAnimationFinished(stateTime))
-				{
-					dead = true;
-				}
-				// draw animation
-				batch.draw(currentFrame, bounds.x, bounds.y);
 			}
 		}
 	}
@@ -240,6 +237,12 @@ public abstract class Entity
 	public boolean collision(Rectangle item)
 	{
 		if (collisionBounds.overlaps(item)) return true;
+		return false;
+	}
+	
+	public boolean spawnCollision(Rectangle item)
+	{
+		if (bounds.overlaps(item)) return true;
 		return false;
 	}
 	

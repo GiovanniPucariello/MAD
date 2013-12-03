@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Array;
 public class Character
 {
 	// Characters speed
-	private static int CHAR_SPEED = 200;
+	private static int CHAR_SPEED = 175;
 	
 	// Transport speed
 	private static int TRANS_SPEED = 1000;
@@ -135,6 +135,11 @@ public class Character
 		stateTime = 0;
 		// play dying sound
 		DyingSound.play();
+	}
+	
+	public boolean getTransporting()
+	{
+		return transporting;
 	}
 	
 	public boolean isDead()

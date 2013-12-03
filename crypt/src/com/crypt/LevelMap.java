@@ -31,7 +31,7 @@ public class LevelMap
 	
 	// dimensions of map (maximum level is 50)
 	private int[] mapLength = new int[50];
-	private int[] mapHeigth = new int[50];
+	private int[] mapHeight = new int[50];
 	
 	// map difficulty
 	private int[] mapDifficulty = new int[50];
@@ -69,14 +69,14 @@ public class LevelMap
 				mapLength[numberLevels] = Integer.valueOf(token.nextToken());
 				
 				// get number of rows
-				mapHeigth[numberLevels] = Integer.valueOf(token.nextToken());
-				mapHeigth[numberLevels]--;
+				mapHeight[numberLevels] = Integer.valueOf(token.nextToken());
+				mapHeight[numberLevels]--;
 				
 				// get level difficulty
 				mapDifficulty[numberLevels] = Integer.valueOf(token.nextToken());
 				
 				// create the map storage to the size of the map
-				createMap(mapLength[numberLevels]+1,mapHeigth[numberLevels]+1);
+				createMap(mapLength[numberLevels]+1,mapHeight[numberLevels]+1);
 				
 				// read next line
 				line = br.readLine();
@@ -84,7 +84,7 @@ public class LevelMap
 				spawnSiteInfo.add(line);
 				
 				// initialise loop to read cell data
-				int y = mapHeigth[numberLevels];
+				int y = mapHeight[numberLevels];
 				
 				// until end of file or all row have been read
 				while ((line = br.readLine()) != null && y > -1)
@@ -101,7 +101,7 @@ public class LevelMap
 					y--;
 				}
 				
-				mapHeigth[numberLevels]++;
+				mapHeight[numberLevels]++;
 			}
 			
 		} catch (FileNotFoundException e) {
@@ -126,7 +126,7 @@ public class LevelMap
 		
 		// get info to parse
 		String info = spawnSiteInfo.get(thisLevel);
-		
+		System.out.println("spawn info : "+ info);
 		// Setup tokenizer to parse info
 		StringTokenizer token = new StringTokenizer(info, ",");
 		
@@ -181,7 +181,7 @@ public class LevelMap
 	{
 		for(int x = 0; x < mapLength[thisLevel]; x++)
 		{
-			for(int y = 0; y < mapHeigth[thisLevel]; y++)
+			for(int y = 0; y < mapHeight[thisLevel]; y++)
 			{				
 				if (id == cellProperties(x,y))
 				{
@@ -296,6 +296,8 @@ public class LevelMap
 	
 	public int cellProperties(int x, int y)
 	{
+		if (x < 0 || x>mapLength[thisLevel]|| y<0 || y>mapHeight[thisLevel])
+				return 0;
 		// get block details
 		int block = level.get(thisLevel).get(x).get(y);
 				
@@ -339,7 +341,7 @@ public class LevelMap
 	
 	public int getMapHeightBlocks()
 	{
-		return mapHeigth[thisLevel];
+		return mapHeight[thisLevel];
 	}
 	
 	public int getDifficulty()
@@ -354,7 +356,7 @@ public class LevelMap
 	
 	float getMapHeightPixels()
 	{
-		return mapHeigth[thisLevel] * Constant.BLOCK_SIZE;
+		return mapHeight[thisLevel] * Constant.BLOCK_SIZE;
 	}
 	
 	public boolean canIMove(Rectangle bounds, Vector2 movement)
@@ -505,9 +507,9 @@ public class LevelMap
 			// adjust position
 			bounds.y += movement.y;
 			// check still on map;
-			if (bounds.y > (mapHeigth[thisLevel] * Constant.BLOCK_SIZE) - bounds.height - 1)
+			if (bounds.y > (mapHeight[thisLevel] * Constant.BLOCK_SIZE) - bounds.height - 1)
 			{
-				bounds.y = mapHeigth[thisLevel] * Constant.BLOCK_SIZE - bounds.height - 1;
+				bounds.y = mapHeight[thisLevel] * Constant.BLOCK_SIZE - bounds.height - 1;
 				// correct the movement so the call code knows
 				movement.y = 0;
 				// flag to stop moving in this direction
@@ -573,10 +575,10 @@ public class LevelMap
 					while (level.get(thisLevel).get(xblock).get(yblock) != Constant.BLOCKVALUES.TRANSPORT
 							.getValue()) {
 						yblock += direction;
-						if (yblock > mapHeigth[thisLevel] - 1)
+						if (yblock > mapHeight[thisLevel] - 1)
 							yblock = 0;
 						if (yblock < 0)
-							yblock = mapHeigth[thisLevel] - 1;
+							yblock = mapHeight[thisLevel] - 1;
 					}
 					// set character to the position of the landing site + one movement to ensure that he is outside the bounds of the transport site
 					// and does not start on the return trip (endless loop)

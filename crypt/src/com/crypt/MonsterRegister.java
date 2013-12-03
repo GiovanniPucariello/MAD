@@ -1,7 +1,6 @@
 package com.crypt;
 
 import java.util.Iterator;
-import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -15,14 +14,15 @@ public class MonsterRegister
 {
 	private WorldController worldController;
 	private LevelMap levelMap;
-	private Animation[] animation = new Animation[5];
+	private Animation[] mummyAnimation = new Animation[5];
+	private Animation[] batAnimation = new Animation[5];
+	private Animation[] snakeAnimation = new Animation[5];
 	private Sound killedSound;
 	private Rectangle charCollisionBounds;
 	
 	public Array<Entity> monsters;
-
 	
-	public MonsterRegister(WorldController worldController, LevelMap levelMap, Animation[] animation)
+	public MonsterRegister(WorldController worldController, LevelMap levelMap, Animation[] mummyAnimation, Animation[] batAnimation, Animation[] snakeAnimation)
 	{
 		// Create monster array
 		this.monsters = new Array<Entity>();
@@ -31,7 +31,9 @@ public class MonsterRegister
 		
 		this.worldController = worldController;
 		this.levelMap = levelMap;
-		this.animation = animation;
+		this.mummyAnimation = mummyAnimation;
+		this.snakeAnimation = snakeAnimation;
+		this.batAnimation = batAnimation;
 	}
 	
 	public void init()
@@ -44,7 +46,7 @@ public class MonsterRegister
 		boolean empty = true;
 		for(Entity monster : monsters)
 		{
-			if (monster.collision(area)) empty = false;
+			if (monster.spawnCollision(area)) empty = false;
 		}
 		return empty;
 	}	
@@ -59,18 +61,29 @@ public class MonsterRegister
 		return count;
 	}
 	
-	public void addMonster(int spawnSiteID,int creatureType, Vector2 position)
+	public Entity addMonster(int spawnSiteID,int creatureType, Vector2 position, boolean active)
 	{
 		Entity creatureToAdd = null;
 		switch (creatureType)
 		{
 		case 1 :	
-			creatureToAdd = new Mummy(position, animation, levelMap, spawnSiteID);
+			creatureToAdd = new Mummy(worldController, position, mummyAnimation, levelMap, spawnSiteID, active);
+			break;
+		case 2 :
+			creatureToAdd = new Snake(worldController, position, snakeAnimation, levelMap, spawnSiteID, active);
+			break;
+		case 4 :
+			creatureToAdd = new Bat(worldController, position, batAnimation, levelMap, spawnSiteID, active);
 			break;
 		}
 		
 		// if creature selected add it
-		if (creatureToAdd != null) monsters.add(creatureToAdd);
+		if (creatureToAdd != null) 
+		{
+			monsters.add(creatureToAdd);
+			return creatureToAdd;
+		}
+		return null;
 	}
 	
 	public void update(float deltaTime, Rectangle viewPort)
@@ -104,11 +117,14 @@ public class MonsterRegister
 				else
 				{
 					// check if monster has catch the character
-					if (monster.collision(charCollisionBounds) == true)
-					{
-						worldController.characterCaught();
+					
+					if (!worldController.character.getTransporting()) {
+						if (monster.hit == false
+								&& monster.collision(charCollisionBounds) == true) {
+							worldController.characterCaught();
+						}
 					}
-				}				
+				}
 			}
 		}
 	}

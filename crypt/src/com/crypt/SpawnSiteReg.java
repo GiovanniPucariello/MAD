@@ -21,16 +21,11 @@ public class SpawnSiteReg
 		// Spawn Animation
 		private Animation[] animation;
 		
-		// sounds
-		private Sound spawnSound;
-		
 		public SpawnSiteReg(LevelMap levelMap, Animation[] animations, MonsterRegister monsterReg)
 		{
 			this.levelMap = levelMap;
 			this.animation = animations;
 			this.monsterReg = monsterReg;
-			// spawn sound
-			spawnSound = Gdx.audio.newSound(Gdx.files.internal("data/SpawnCreature.mp3"));
 			// setup sites
 			spawnSites = levelMap.getSpawnSites(animation, monsterReg);	
 		}
