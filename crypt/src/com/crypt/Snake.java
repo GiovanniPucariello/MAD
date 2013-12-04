@@ -12,7 +12,7 @@ public class Snake extends Entity
 	
 	public Snake(WorldController worldController, Vector2 position, Animation[] animation, LevelMap levelMap, int spawnSiteID, boolean active)
 	{	
-		super(position, animation, new Vector2(8,2), new Vector2(-8,-2), spawnSiteID, active);
+		super(position, animation, new Vector2(13,1), new Vector2(-12,-13), spawnSiteID, active);
 		
 		CHAR_SPEED = 90;
 		
@@ -39,22 +39,22 @@ public class Snake extends Entity
 		{
 			if (bounds.x < characterPosition.x)
 			{
-				System.out.println("Moving right");
+				//System.out.println("Moving right");
 				velocity.x = 1;
 			}
 			else if (bounds.x > characterPosition.x)
 			{
-				System.out.println("Moving left");
+				//System.out.println("Moving left");
 				velocity.x = -1;
 			}
 			if (bounds.y < characterPosition.y)
 			{
-				System.out.println("Moving up");
+				//System.out.println("Moving up");
 				velocity.y = 1;
 			}
 			else if (bounds.y < characterPosition.y)
 			{
-				System.out.println("Moving down");
+				//System.out.println("Moving down");
 				velocity.y = -1;
 			}
 		}	
@@ -66,7 +66,7 @@ public class Snake extends Entity
 		
 		while (velocity.x == 0.0 && velocity.y == 0.0) 
 		{
-			System.out.println("random");
+			//System.out.println("random");
 			velocity.x = randomGenerator.nextInt(3)-1;
 			velocity.y = randomGenerator.nextInt(3)-1;
 		}

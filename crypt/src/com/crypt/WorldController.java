@@ -134,7 +134,10 @@ public class WorldController implements InputProcessor
 					character.init();
 					treasureSites.init();
 					keyRegister.init();
-					doorSites.init();		
+					doorSites.init();	
+					monsterRegister.init();
+					bulletreg.init();
+					spawnSiteReg.init();
 				}				
 			}
 		}
@@ -151,11 +154,11 @@ public class WorldController implements InputProcessor
 		{
 			float adjustedMovement = (Gdx.input.getAccelerometerY());
 			//Gdx.app.debug("Crypt", "AccelerometerY : " + adjustedMovement);
-			if (adjustedMovement < -1.0f)
+			if (adjustedMovement < -0.5f)
 			{
 				character.moveLeft();
 			}
-			else if (adjustedMovement > 0.2f)
+			else if (adjustedMovement > 0.5f)
 			{
 				character.moveRight();
 			}
@@ -165,11 +168,11 @@ public class WorldController implements InputProcessor
 			}
 			
 			adjustedMovement = Gdx.input.getAccelerometerX();
-			if (adjustedMovement < 0.1f)
+			if (adjustedMovement < -0.3f)
 			{
 				character.moveUp();
 			}
-			else if (adjustedMovement > 3.0f)
+			else if (adjustedMovement > 2.3f)
 			{
 				character.moveDown();
 			} 

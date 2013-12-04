@@ -126,7 +126,7 @@ public class LevelMap
 		
 		// get info to parse
 		String info = spawnSiteInfo.get(thisLevel);
-		System.out.println("spawn info : "+ info);
+
 		// Setup tokenizer to parse info
 		StringTokenizer token = new StringTokenizer(info, ",");
 		
@@ -155,14 +155,6 @@ public class LevelMap
 			heigth = Integer.valueOf(token.nextToken());
 			maxCreatures = Integer.valueOf(token.nextToken());
 			creatures = Integer.valueOf(token.nextToken());
-			
-/*			System.out.println("siteid : '"+siteid+"'");
-			System.out.println("triggerX : '"+triggerX+"'");
-			System.out.println("triggerY : '"+triggerY+"'");
-			System.out.println("width : '"+width+"'");
-			System.out.println("heigth : '"+heigth+"'");
-			System.out.println("maxCreatures : '"+maxCreatures+"'");
-			System.out.println("creatures : '"+creatures+"'");*/
 
 			if (siteid != 0)
 			{
@@ -170,7 +162,6 @@ public class LevelMap
 				position.set(findSpawnSite(siteid));
 				Rectangle triggerBounds = new Rectangle(triggerX * Constant.BLOCK_SIZE, triggerY * Constant.BLOCK_SIZE, width * Constant.BLOCK_SIZE, heigth * Constant.BLOCK_SIZE );
 				sites.add(new SpawnSite(siteid, triggerBounds, position, maxCreatures, creatures, animation, monsterReg));
-				//System.out.println("Spawn Site created: siteID :" +siteid+" triggerBounds("+ triggerBounds.x +","+ triggerBounds.y+","+triggerBounds.width+","+triggerBounds.height+") position("+position.x+","+position.y+") maxCreatures "+maxCreatures);
 			}
 		}		
 		
@@ -248,6 +239,7 @@ public class LevelMap
 
 	public int Cell(int x, int y)
 	{
+		if (x < 0 || x > mapLength[thisLevel] || y < 0 || y> mapHeight[thisLevel]) return 0;
 		// get block details
 		int block = level.get(thisLevel).get(x).get(y);
 		

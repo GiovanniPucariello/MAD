@@ -274,11 +274,11 @@ public class Character
 		
 		// update collision bounds
 		// adjust collision size
-		collisionBounds.x = bounds.x + 11;
-		collisionBounds.y = bounds.y + 2;
+		collisionBounds.x = bounds.x + 13;
+		collisionBounds.y = bounds.y + 4;
 		// subtraction includes additions to x & y 
-		collisionBounds.width = bounds.width - 22;
-		collisionBounds.height =  bounds.height -4;
+		collisionBounds.width = bounds.width - 26;
+		collisionBounds.height =  bounds.height -8;
 	}
 	
 	void draw(SpriteBatch batch)

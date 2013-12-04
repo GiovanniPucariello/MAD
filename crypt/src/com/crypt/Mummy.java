@@ -3,14 +3,11 @@ package com.crypt;
 import java.util.Random;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Mummy extends Entity
 {	
 	Random randomGenerator = new Random();
-	private Character character;
 	private WorldController worldController;
 	
 	public Mummy(WorldController worldController, Vector2 position, Animation[] animation, LevelMap levelMap, int spawnSiteID, boolean active)
@@ -42,22 +39,22 @@ public class Mummy extends Entity
 		{
 			if (bounds.x < characterPosition.x)
 			{
-				System.out.println("Moving right");
+				//System.out.println("Moving right");
 				velocity.x = 1;
 			}
 			else if (bounds.x > characterPosition.x)
 			{
-				System.out.println("Moving left");
+				//System.out.println("Moving left");
 				velocity.x = -1;
 			}
 			if (bounds.y < characterPosition.y)
 			{
-				System.out.println("Moving up");
+				//System.out.println("Moving up");
 				velocity.y = 1;
 			}
 			else if (bounds.y < characterPosition.y)
 			{
-				System.out.println("Moving down");
+				//System.out.println("Moving down");
 				velocity.y = -1;
 			}
 		}	
@@ -69,7 +66,7 @@ public class Mummy extends Entity
 		
 		while (velocity.x == 0.0 && velocity.y == 0.0) 
 		{
-			System.out.println("random");
+			//System.out.println("random");
 			velocity.x = randomGenerator.nextInt(3)-1;
 			velocity.y = randomGenerator.nextInt(3)-1;
 		}
