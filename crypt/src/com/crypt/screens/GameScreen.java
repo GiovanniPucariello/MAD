@@ -3,6 +3,7 @@ package com.crypt.screens;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.crypt.Constant;
 import com.crypt.Crypt;
 import com.crypt.WorldController;
 import com.crypt.WorldRenderer;
@@ -20,6 +21,10 @@ public class GameScreen implements Screen{
 		this.game = game;
 		// Set Libgdx log level to DEBUG
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
+		
+		// Get game options set
+		Constant.loadGameOptions();
+		
 		// Initialise controller and renderer
 		world = new WorldController();
 		worldRenderer = new WorldRenderer(world);

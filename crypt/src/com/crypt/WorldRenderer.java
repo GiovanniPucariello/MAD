@@ -38,15 +38,38 @@ public class WorldRenderer implements Disposable {
 		batch = new SpriteBatch();
 	}
 	
-	private void init()
-	{
-		
-	}
-	
 	public void render()
 	{
 		// Clear Screen
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		switch (Constant.PASSAGEWAY_COLOUR)
+		{
+			case 0:
+			{
+				Gdx.gl.glClearColor(0, 0, 0, 1);
+				break;
+			}
+			case 1:
+			{
+				Gdx.gl.glClearColor(0.75f, 0.75f, 0.75f, 1);
+				break;
+			}
+			case 2:
+			{
+				Gdx.gl.glClearColor(1, 0.78f, 0, 1);
+				break;
+			}
+			case 3:
+			{
+				Gdx.gl.glClearColor(1, 1, 0, 1);
+				break;
+			}
+			case 4:
+			{
+				Gdx.gl.glClearColor(0, 1, 1, 1);
+				break;
+			}
+		}
+		
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 				
 		// tell the camera to update its matrices.
@@ -55,8 +78,8 @@ public class WorldRenderer implements Disposable {
 	    // begin batch
 		batch.begin();
 			
-			/*// update screen position based on the character
-			updateViewport();*/
+			// update screen position based on the character
+			updateViewport();
 			// Update camera position view position 
 			camera.position.set(viewPort.x + (viewPort.width / 2), viewPort.y + (viewPort.height / 2), 0);
 			camera.update();
@@ -66,13 +89,13 @@ public class WorldRenderer implements Disposable {
 		    batch.setProjectionMatrix(camera.combined);
 			
 			// disabling blending with the background give a speed advantage	
-			batch.disableBlending();
+			//batch.disableBlending();
 			
 			// draw background
 			world.background.draw(batch, backgroundPort);
 			
 			// enable blending for other objects in the world
-			batch.enableBlending();
+			//batch.enableBlending();
 			
 			// ****** render all other objects here and below ******
 			deltatime = Gdx.graphics.getDeltaTime();

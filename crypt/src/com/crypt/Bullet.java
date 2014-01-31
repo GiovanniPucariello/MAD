@@ -10,7 +10,7 @@ public class Bullet extends Entity{
 
 	public Bullet(Vector2 position, Animation[] animation, LevelMap levelMap, Vector2 bulletDirection, boolean active) {
 		super(position, animation, new Vector2(0,0), new Vector2(0,0),0, active);
-		CHAR_SPEED = 600;
+		CHAR_SPEED = 600 * Constant.GAME_SPEED;
         this.velocity = bulletDirection;
         this.levelMap = levelMap;
         this.bounds = new Rectangle(position.x, position.y, 16,16);

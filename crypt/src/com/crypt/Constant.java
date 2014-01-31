@@ -1,18 +1,98 @@
 package com.crypt;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+
 public class Constant 
 {
 	// Camera view screen height
-	public final static float SCREEN_HEIGHT = 768;
+	public static float SCREEN_HEIGHT = 768;
 	
 	// Number of rows always required on screen
-	public final static int NUM_ROWS = 12;
+	public static int NUM_ROWS = 12;
 	
 	// Block size
 	public final static int BLOCK_SIZE = 64;
 	
 	// Number of block used in map
 	public final static int NUM_MAP_BLOCKS = 12;
+	
+	// Game speed factor
+	public static float GAME_SPEED;
+	
+	// Character control method
+	public final static int JOYSTICK = 1;
+	public final static int TILT = 0;
+	public static int CHAR_CONTROL = 0;
+	
+	// PassageWays Colour
+	public static int PASSAGEWAY_COLOUR = 0;
+	
+	public final static int PASSAGEWAY_BLACK = 0;
+	public final static int PASSAGEWAY_LGRAY = 0;
+	public final static int PASSAGEWAY_ORANGE = 0;
+	public final static int PASSAGEWAY_YELLOW = 0;
+	public final static int PASSAGEWAY_CYAN = 0;
+	
+	public static void loadGameOptions()
+	{
+		FileHandle file = Gdx.files.internal("data/GameOptions.csv");
+		BufferedReader br = null;
+		String line = "";
+		
+		try 
+		{
+			// setup buffer
+			br = file.reader(400);
+			line = br.readLine();
+			if (line != null)
+			{
+				GAME_SPEED = Float.valueOf(line);
+			}
+			line = br.readLine();
+			if (line != null)
+			{
+				NUM_ROWS = Integer.valueOf(line);
+				SCREEN_HEIGHT = NUM_ROWS * BLOCK_SIZE;
+			}
+			line = br.readLine();
+			if (line != null)
+			{
+				PASSAGEWAY_COLOUR = Integer.valueOf(line);
+			}
+			line = br.readLine();
+			if (line != null)
+			{
+				CHAR_CONTROL = Integer.valueOf(line);
+			}
+		}
+		catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
+		finally 
+		{
+			if (br != null) 
+			{
+				try 
+				{
+					br.close();
+				}
+				catch (IOException e) 
+				{
+						e.printStackTrace();
+				}
+			}
+		}
+	}
 	
 	// Block types and filenames
 	public static enum BLOCK

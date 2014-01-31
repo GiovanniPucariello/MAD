@@ -14,7 +14,7 @@ public class Bat extends Entity
 	{	
 		super(position, animation, new Vector2(20,20), new Vector2(-20,-20), spawnSiteID, active);
 		
-		CHAR_SPEED = 200;
+		CHAR_SPEED = 200 * Constant.GAME_SPEED;
 		
 		//Set velocity of bat at spawn, if 0,0: do it again.
 		velocity.x = randomGenerator.nextInt(2)-1;

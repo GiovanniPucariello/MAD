@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -191,35 +190,32 @@ public class WorldController implements InputProcessor
 	public void addbullet(float x , float y)
 	{
 		int centerx = Gdx.graphics.getWidth() /2;
-		int centery = Gdx.graphics.getHeight() /2;
-		x = x-centerx;
-		y = y-centery;
+		int height = Gdx.graphics.getHeight();
+		int centreThirdFrom = height/3;
+		int centreThirdTo = height /3 * 2;
+		
 		// Call bulletRegister class from here and add bullet
 		Vector2 bulletStart = getCharacterPosition();
 		Vector2 bulletDirection = new Vector2(0,0);
 
-		if (x> Math.abs(y))
+		if (x > centerx && y > centreThirdFrom && y < centreThirdTo)
 		{
 				bulletDirection.x = 1;
 				bulletreg.add(bulletDirection,bulletStart);
-		} 
-		if ((-x)> Math.abs(y))
+		} else if (x < centerx && y > centreThirdFrom && y < centreThirdTo)
 		{
 				bulletDirection.x = -1;
 				bulletreg.add(bulletDirection,bulletStart);
 
-		}
-		if (y> Math.abs(x))
+		} else if (y > centreThirdFrom)
 		{
 			bulletDirection.y = -1;
 			bulletreg.add(bulletDirection,bulletStart);
-		}
-		if ((-y)> Math.abs(x))
+		} else if (y < centreThirdTo)
 		{
 			bulletDirection.y = 1;
 			bulletreg.add(bulletDirection,bulletStart);
-		}
-		if(y==x)
+		} else if(y==x)
 		{
 			bulletDirection.x = 1;
 			bulletDirection.y = 0;

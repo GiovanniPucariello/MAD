@@ -1,0 +1,103 @@
+
+PlayerOptionsUI.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+doneDown
+  rotate: false
+  xy: 1, 124
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+DoneUp
+  rotate: false
+  xy: 1, 1
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+CharacterControl
+  rotate: false
+  xy: 233, 179
+  size: 361, 66
+  orig: 361, 66
+  offset: 0, 0
+  index: -1
+PassagewayColour
+  rotate: false
+  xy: 596, 179
+  size: 361, 66
+  orig: 361, 66
+  offset: 0, 0
+  index: -1
++
+  rotate: false
+  xy: 959, 145
+  size: 42, 100
+  orig: 42, 100
+  offset: 0, 0
+  index: -1
+SizeOfGraphics
+  rotate: false
+  xy: 233, 76
+  size: 318, 67
+  orig: 318, 67
+  offset: 0, 0
+  index: -1
+ScreenJoystick
+  rotate: false
+  xy: 233, 8
+  size: 309, 66
+  orig: 309, 66
+  offset: 0, 0
+  index: -1
+GameSpeed
+  rotate: false
+  xy: 544, 8
+  size: 230, 66
+  orig: 230, 66
+  offset: 0, 0
+  index: -1
+Tilt&Turn
+  rotate: false
+  xy: 553, 77
+  size: 218, 66
+  orig: 218, 66
+  offset: 0, 0
+  index: -1
+radioChecked
+  rotate: false
+  xy: 773, 84
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: -1
+SquareChecked
+  rotate: false
+  xy: 776, 12
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+SquareNotChecked
+  rotate: false
+  xy: 834, 107
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+-
+  rotate: false
+  xy: 906, 77
+  size: 32, 100
+  orig: 32, 100
+  offset: 0, 0
+  index: -1
+radioNotChecked
+  rotate: false
+  xy: 940, 84
+  size: 59, 59
+  orig: 59, 59
+  offset: 0, 0
+  index: -1

@@ -8,7 +8,7 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "Crypt " + Crypt.VERSION;
 		cfg.useGL20 = true;
-		cfg.width = 1000;
+		cfg.width = 1024;
 		cfg.height = 600;
 		
 		new LwjglApplication(new Crypt(), cfg);

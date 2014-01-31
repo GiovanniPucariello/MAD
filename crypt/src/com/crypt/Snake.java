@@ -14,7 +14,7 @@ public class Snake extends Entity
 	{	
 		super(position, animation, new Vector2(13,1), new Vector2(-12,-13), spawnSiteID, active);
 		
-		CHAR_SPEED = 90;
+		CHAR_SPEED = 90 * Constant.GAME_SPEED;
 		
 		//Set velocity of snake at spawn, if 0,0: do it again.
 		velocity.x = randomGenerator.nextInt(2)-1;

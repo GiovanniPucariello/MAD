@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Array;
 public class Character
 {
 	// Characters speed
-	private static int CHAR_SPEED = 175;
+	private static int CHAR_SPEED = (int) (175 * Constant.GAME_SPEED);
 	
 	// Transport speed
 	private static int TRANS_SPEED = 1000;

@@ -93,7 +93,7 @@ public class SpawnSite
 	private void Spawn(float deltaTime) 
 	{
 		// update time
-		timeSinceLastMonster += deltaTime;
+		timeSinceLastMonster += deltaTime * Constant.GAME_SPEED;
 
 		// check if the spawn site is clear of creatures
 		if (monsterReg.checkAreaClear(spawnArea))

@@ -29,7 +29,10 @@ public class Background
 			// get file form disk based upon the constant defined
 			blocks[i] = new TextureRegion(new Texture(Gdx.files.internal(blockpaths.getfilename())));
 			i++;
-		}		
+		}
+		
+		// uncomment this line to enable different backgrounds
+		//blocks[0] = new TextureRegion(new Texture(Gdx.files.internal("data/Transparent.png")));
 	}
 	
 	void draw(SpriteBatch batch, Rectangle viewport)
@@ -58,7 +61,6 @@ public class Background
 				if (lastRow > levelMap.getMapHeightBlocks())
 					lastRow = levelMap.getMapHeightBlocks();
 				
-		//System.out.println("renderXPos :"+ renderXPos + "; renderYPos :"+ renderYPos + "; startCol :"+ startCol + "; startRow :"+ startRow + "; lastColumn :"+ lastColumn);
 		
 		// loop across the map drawing end cell
 		for(int col = startCol; col < lastColumn; col++)
@@ -66,7 +68,9 @@ public class Background
 			float y = renderYPos;
 			for (int row = startRow; row < lastRow; row++)
 			{
+				
 				// Use the map cell index to reference the array of images
+				
 				batch.draw(blocks[levelMap.Cell(col, row)], renderXPos, y);
 
 				y += Constant.BLOCK_SIZE;

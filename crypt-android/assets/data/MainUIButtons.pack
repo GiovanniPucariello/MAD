@@ -1,0 +1,75 @@
+
+MainUIButtons.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+gameSelectionDown
+  rotate: false
+  xy: 1, 370
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+gameSelectionUp
+  rotate: false
+  xy: 1, 247
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+LevelEditorDown
+  rotate: false
+  xy: 233, 370
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+LevelEditorUp
+  rotate: false
+  xy: 1, 124
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+levelSelectionDown
+  rotate: false
+  xy: 233, 247
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+levelSelectionUp
+  rotate: false
+  xy: 465, 370
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+playDown
+  rotate: false
+  xy: 1, 1
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+playingOptionsDown
+  rotate: false
+  xy: 233, 124
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+playingOptionsUp
+  rotate: false
+  xy: 465, 247
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+playUp
+  rotate: false
+  xy: 697, 370
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1

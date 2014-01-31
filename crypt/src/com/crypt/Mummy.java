@@ -14,7 +14,7 @@ public class Mummy extends Entity
 	{	
 		super(position, animation, new Vector2(8,2), new Vector2(-8,-2), spawnSiteID, active);
 		
-		CHAR_SPEED = 80;
+		CHAR_SPEED = 80 * Constant.GAME_SPEED;
 		
 		//Set velocity of mummy at spawn, if 0,0: do it again.
 		velocity.x = randomGenerator.nextInt(2)-1;
