@@ -239,6 +239,11 @@ public class WorldController implements InputProcessor
 		return character.getCharacterPosition();
 	}
 	
+	public Rectangle getCharacterBounds()
+	{
+		return character.getCharacterBounds();
+	}
+	
 	public Rectangle getCharacterCollisionBounds()
 	{
 		return character.getCollisionBounds();
