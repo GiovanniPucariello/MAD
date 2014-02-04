@@ -3,7 +3,11 @@ package com.crypt;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
+import sun.rmi.runtime.Log;
+
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
@@ -407,67 +411,34 @@ public class PlayingOptionsScreen implements Screen
 	
 	private void loadGameOptions()
 	{
-		FileHandle file = Gdx.files.internal("data/GameOptions.csv");
-		BufferedReader br = null;
-		String line = "";
-		
-		try 
-		{
-			// setup buffer
-			br = file.reader(400);
-			line = br.readLine();
-			if (line != null)
-			{
-				gameSpeed = Float.valueOf(line);
+		FileHandle file = Gdx.files.local("GameOptions.csv");
+		if (Gdx.files.local("GameOptions.csv").exists()) {
+			String line = file.readString();
+			StringTokenizer token = new StringTokenizer(line, ",");
+						
+			if (token.hasMoreTokens()) {
+				gameSpeed = Float.valueOf(token.nextToken());
 			}
-			line = br.readLine();
-			if (line != null)
-			{
-				graphicsSize = Integer.valueOf(line);
+			if (token.hasMoreTokens()) {
+				graphicsSize = Integer.valueOf(token.nextToken());
 			}
-			line = br.readLine();
-			if (line != null)
-			{
-				blackground = Integer.valueOf(line);
+			if (token.hasMoreTokens()) {
+				blackground = Integer.valueOf(token.nextToken());
 			}
-			line = br.readLine();
-			if (line != null)
-			{
-				joystick = Integer.valueOf(line);
-			}
-		}
-		catch (FileNotFoundException e) 
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		} 
-		finally 
-		{
-			if (br != null) 
-			{
-				try 
-				{
-					br.close();
-				}
-				catch (IOException e) 
-				{
-						e.printStackTrace();
-				}
+			if (token.hasMoreTokens()) {
+				joystick = Integer.valueOf(token.nextToken());
 			}
 		}
 	}
 	
 	private void saveGameOptions()
 	{
-		Gdx.files.local("data/GameOptions.csv").delete();		 
-		
-		FileHandle file = Gdx.files.local("data/GameOptions.csv");
-		file.writeString(Float.toString(gameSpeed)+"\n", true);
-		file.writeString(Integer.toString(graphicsSize)+"\n", true);
-		file.writeString(Integer.toString(blackground)+"\n", true);
-		file.writeString(Integer.toString(joystick)+"\n", true);
+		Gdx.files.local("GameOptions.csv").delete();		 
+		FileHandle file = Gdx.files.local("GameOptions.csv");
+		String line = Float.toString(gameSpeed)+",";
+		line += Integer.toString(graphicsSize)+",";
+		line += Integer.toString(blackground) + ",";
+		line += Integer.toString(joystick);
+		file.writeString(line, false);
 	}
 }

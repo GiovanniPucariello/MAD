@@ -175,8 +175,11 @@ public class MainMenuScreen implements Screen
 			
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button)
 			{
+				// play click sound
 				buttonClick.play();
-				//game.setScreen(new PlayingOptionsScreen(game));
+				
+				// calls play option screen
+				game.setScreen(new PlayingOptionsScreen(game));
 			}
 		});
 		

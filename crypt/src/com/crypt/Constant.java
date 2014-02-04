@@ -3,6 +3,7 @@ package com.crypt;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -40,56 +41,23 @@ public class Constant
 	
 	public static void loadGameOptions()
 	{
-		FileHandle file = Gdx.files.internal("data/GameOptions.csv");
-		BufferedReader br = null;
-		String line = "";
-		
-		try 
-		{
-			// setup buffer
-			br = file.reader(400);
-			line = br.readLine();
-			if (line != null)
-			{
-				GAME_SPEED = Float.valueOf(line);
+		FileHandle file = Gdx.files.local("GameOptions.csv");
+		if (Gdx.files.local("GameOptions.csv").exists()) {
+			String line = file.readString();
+			StringTokenizer token = new StringTokenizer(line, ",");
+						
+			if (token.hasMoreTokens()) {
+				GAME_SPEED = Float.valueOf(token.nextToken());
 			}
-			line = br.readLine();
-			if (line != null)
-			{
-				NUM_ROWS = Integer.valueOf(line);
+			if (token.hasMoreTokens()) {
+				NUM_ROWS = Integer.valueOf(token.nextToken());
 				SCREEN_HEIGHT = NUM_ROWS * BLOCK_SIZE;
 			}
-			line = br.readLine();
-			if (line != null)
-			{
-				PASSAGEWAY_COLOUR = Integer.valueOf(line);
+			if (token.hasMoreTokens()) {
+				PASSAGEWAY_COLOUR = Integer.valueOf(token.nextToken());
 			}
-			line = br.readLine();
-			if (line != null)
-			{
-				CHAR_CONTROL = Integer.valueOf(line);
-			}
-		}
-		catch (FileNotFoundException e) 
-		{
-			e.printStackTrace();
-		}
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		} 
-		finally 
-		{
-			if (br != null) 
-			{
-				try 
-				{
-					br.close();
-				}
-				catch (IOException e) 
-				{
-						e.printStackTrace();
-				}
+			if (token.hasMoreTokens()) {
+				CHAR_CONTROL = Integer.valueOf(token.nextToken());
 			}
 		}
 	}

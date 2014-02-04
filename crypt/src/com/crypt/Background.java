@@ -32,7 +32,7 @@ public class Background
 		}
 		
 		// uncomment this line to enable different backgrounds
-		//blocks[0] = new TextureRegion(new Texture(Gdx.files.internal("data/Transparent.png")));
+		blocks[0] = new TextureRegion(new Texture(Gdx.files.internal("data/Transparent.png")));
 	}
 	
 	void draw(SpriteBatch batch, Rectangle viewport)
