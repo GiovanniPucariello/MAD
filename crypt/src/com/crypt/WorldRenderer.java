@@ -3,8 +3,13 @@ package com.crypt;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 
 public class WorldRenderer implements Disposable {
@@ -18,11 +23,19 @@ public class WorldRenderer implements Disposable {
 	private float screenHeight;
 	
 	// Screen viewPort
-	private Rectangle viewPort = new Rectangle(0,0,0,0);
+	public Rectangle viewPort = new Rectangle(0,0,0,0);
 	private Rectangle backgroundPort = new Rectangle(0,0,0,0);
 	
 	// time lapse
 	float deltatime;
+	
+	// Joystick image
+	private TextureRegion joystick;
+	private float joystickSize = 192;
+	
+	// Joystick Area
+	public Circle touchPad = new Circle();
+	private Vector2 joystickMovement = new Vector2();
 		
 	public WorldRenderer (WorldController world) 
 	{
@@ -36,6 +49,9 @@ public class WorldRenderer implements Disposable {
 						
 		// Setup a spritebatch for rendering 
 		batch = new SpriteBatch();
+		
+		// setup Joystick ready for possible use
+		joystick = new TextureRegion(new Texture(Gdx.files.internal("data/TouchPad.png")));
 	}
 	
 	public void render()
@@ -107,6 +123,11 @@ public class WorldRenderer implements Disposable {
 			world.bulletreg.draw(batch);
 			world.spawnSiteReg.draw(batch, deltatime);
 			
+			//******* render touch pad last if turned on *************
+			if (Constant.CHAR_CONTROL == Constant.JOYSTICK)
+			{
+				batch.draw(joystick, viewPort.x, viewPort.y, joystickSize, joystickSize);
+			}
 		batch.end();
 	}
 	
@@ -120,6 +141,10 @@ public class WorldRenderer implements Disposable {
 		//stage.setViewport(screenWidth, screenHeight, false);
 		camera.setToOrtho(false, screenWidth, screenHeight);
 		updateViewport();
+		
+		// Adjust the joystick size
+		joystickSize = ((float)Constant.NUM_ROWS / 12) * 192;
+		touchPad = new Circle(joystickSize / 2, viewPort.y + joystickSize / 2, joystickSize/2);
 	}
 	
 	@Override public void dispose()
@@ -201,6 +226,24 @@ public class WorldRenderer implements Disposable {
 			backgroundPort.width = screenWidth;			
 		}
 		
+		// update the position of the touchpad
+		touchPad.y = viewPort.y + joystickSize / 2;
+		touchPad.x = viewPort.x + joystickSize / 2;
+		
 		return viewPort;
+	}
+	
+	public Vector3 unprojected(float x, float y)
+	{
+		Vector3 touchPoint = new Vector3(x, y, 0);
+		camera.unproject(touchPoint);
+		return touchPoint;
+	}
+	
+	public Vector2 joystickMovement(float x, float y)
+	{
+		joystickMovement.x = touchPad.x - x;
+		joystickMovement.y = touchPad.y - y;
+		return joystickMovement;		
 	}
 }

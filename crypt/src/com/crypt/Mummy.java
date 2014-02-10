@@ -3,7 +3,6 @@ package com.crypt;
 import java.util.Random;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Mummy extends Entity
@@ -34,159 +33,40 @@ public class Mummy extends Entity
 	@Override
 	public void changeDirection() 	
 	{	
-		Rectangle characterBounds = new Rectangle(worldController.getCharacterBounds());
+		Vector2 characterPosition = new Vector2(worldController.getCharacterPosition());//character.getCharacterPosition();
 		
-		int charBlockX = (int) (characterBounds.x / Constant.BLOCK_SIZE);
-		int charBlockY = (int) (characterBounds.y / Constant.BLOCK_SIZE);
-		
-		int blockX = (int) (bounds.x / Constant.BLOCK_SIZE);
-		int blockY = (int) (bounds.y / Constant.BLOCK_SIZE);
-		
-		if(characterBounds.x < bounds.x)
+		if(randomGenerator.nextInt(5) < 4)
 		{
-			//System.out.println(blockX + ", " + blockY + " & " + charBlockX + ", " + charBlockY);
-			for(int i=0; i<2; i++)
+			if (bounds.x < characterPosition.x)
 			{
-				blockX--;
-				
-				if(levelMap.Cell(blockX, blockY) ==  Constant.BLOCKVALUES.PASSAGE.getValue())
-				{
-					if(blockX == charBlockX && blockY == charBlockY)
-					{
-						System.out.println("LEFT");
-						velocity.x = -1;
-						velocity.y = 0;
-						break;
-					}
-					else
-					{
-						velocity.x = randomGenerator.nextInt(3)-1;
-						velocity.y = randomGenerator.nextInt(3)-1;
-					}
-				}
-				else if(levelMap.Cell(blockX, blockY) !=  Constant.BLOCKVALUES.PASSAGE.getValue())
-				{
-					velocity.x = randomGenerator.nextInt(3)-1;
-					velocity.y = randomGenerator.nextInt(3)-1;
-					break;
-				}
+				//System.out.println("Moving right");
+				velocity.x = 1;
+			}
+			else if (bounds.x > characterPosition.x)
+			{
+				//System.out.println("Moving left");
+				velocity.x = -1;
+			}
+			if (bounds.y < characterPosition.y)
+			{
+				//System.out.println("Moving up");
+				velocity.y = 1;
+			}
+			else if (bounds.y < characterPosition.y)
+			{
+				//System.out.println("Moving down");
+				velocity.y = -1;
 			}
 		}	
-		
-		
-		
-		if(characterBounds.y > bounds.y)
-		{	
-			charBlockX = (int) (characterBounds.x / Constant.BLOCK_SIZE);
-			charBlockY = (int) (characterBounds.y / Constant.BLOCK_SIZE);
-			
-			blockX = (int) (bounds.x / Constant.BLOCK_SIZE);
-			blockY = (int) (bounds.y / Constant.BLOCK_SIZE);
-			
-			for(int i=0; i<2; i++)
-			{
-				blockY++;
-				
-				if(levelMap.Cell(blockX, blockY) ==  Constant.BLOCKVALUES.PASSAGE.getValue())
-				{
-					if(blockX == charBlockX && blockY == charBlockY)
-					{
-						System.out.println("UP");
-						velocity.y = 1;
-						velocity.x = 0;
-						break;
-					}
-					else
-					{
-						velocity.x = randomGenerator.nextInt(3)-1;
-						velocity.y = randomGenerator.nextInt(3)-1;
-					}
-				}
-				else if(levelMap.Cell(blockX, blockY) !=  Constant.BLOCKVALUES.PASSAGE.getValue())
-				{
-					velocity.x = randomGenerator.nextInt(3)-1;
-					velocity.y = randomGenerator.nextInt(3)-1;
-					break;
-				}
-			}
-		}	
-	
-		if(characterBounds.x > bounds.x)
+		else
 		{
-			charBlockX = (int) (characterBounds.x / Constant.BLOCK_SIZE);
-			charBlockY = (int) (characterBounds.y / Constant.BLOCK_SIZE);
-			
-			blockX = (int) (bounds.x / Constant.BLOCK_SIZE);
-			blockY = (int) (bounds.y / Constant.BLOCK_SIZE);
-	
-			for(int i=0; i<2; i++)
-			{
-				blockX++;
-				
-				if(levelMap.Cell(blockX, blockY) ==  Constant.BLOCKVALUES.PASSAGE.getValue())
-				{
-					if(blockX == charBlockX && blockY == charBlockY)
-					{
-						System.out.println("RIGHT");
-						velocity.x = 1;
-						velocity.y = 0;
-						break;
-					}
-					else
-					{
-						velocity.x = randomGenerator.nextInt(3)-1;
-						velocity.y = randomGenerator.nextInt(3)-1;
-					}
-				}
-				else if(levelMap.Cell(blockX, blockY) !=  Constant.BLOCKVALUES.PASSAGE.getValue())
-				{
-					velocity.x = randomGenerator.nextInt(3)-1;
-					velocity.y = randomGenerator.nextInt(3)-1;
-					break;
-				}
-			}
+			velocity.x = randomGenerator.nextInt(3)-1;
+			velocity.y = randomGenerator.nextInt(3)-1;
 		}
-
-		if(characterBounds.y < bounds.y)
-		{
-			
-			charBlockX = (int) (characterBounds.x / Constant.BLOCK_SIZE);
-			charBlockY = (int) (characterBounds.y / Constant.BLOCK_SIZE);
 		
-			blockX = (int) (bounds.x / Constant.BLOCK_SIZE);
-			blockY = (int) (bounds.y / Constant.BLOCK_SIZE);
-		
-			for(int i=0; i<2; i++)
-			{
-				blockY--;
-				
-				if(levelMap.Cell(blockX, blockY) ==  Constant.BLOCKVALUES.PASSAGE.getValue())
-				{
-					if(blockX == charBlockX && blockY == charBlockY)
-					{
-						System.out.println("DOWN");
-						velocity.y = -1;
-						velocity.x = 0;
-						break;
-					}
-					else
-					{
-						velocity.x = randomGenerator.nextInt(3)-1;
-						velocity.y = randomGenerator.nextInt(3)-1;
-					}
-				}
-				else if(levelMap.Cell(blockX, blockY) !=  Constant.BLOCKVALUES.PASSAGE.getValue())
-				{
-					velocity.x = randomGenerator.nextInt(3)-1;
-					velocity.y = randomGenerator.nextInt(3)-1;
-					break;
-				}
-			}
-		}	
-			
 		while (velocity.x == 0.0 && velocity.y == 0.0) 
 		{
-			System.out.println("STUCK! FIXING...");
+			//System.out.println("random");
 			velocity.x = randomGenerator.nextInt(3)-1;
 			velocity.y = randomGenerator.nextInt(3)-1;
 		}

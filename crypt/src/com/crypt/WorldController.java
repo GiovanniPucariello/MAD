@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class WorldController implements InputProcessor
@@ -32,6 +33,10 @@ public class WorldController implements InputProcessor
 	private boolean charHit = false;
 	
 	private float timer = 0f;
+	
+	// unprojected screen touch position
+	private Vector3 touchPoint = new Vector3();
+	private Vector2 direction = new Vector2();
 	
 	public WorldController() 
 	{
@@ -149,35 +154,26 @@ public class WorldController implements InputProcessor
 	}
 
 	private void handleAccelerometer() {
-		if (Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer))
-		{
-			float adjustedMovement = (Gdx.input.getAccelerometerY());
-			//Gdx.app.debug("Crypt", "AccelerometerY : " + adjustedMovement);
-			if (adjustedMovement < -0.5f)
-			{
-				character.moveLeft();
-			}
-			else if (adjustedMovement > 0.5f)
-			{
-				character.moveRight();
-			}
-			else 
-			{
-				character.stopHoziontialMove();
-			}
-			
-			adjustedMovement = Gdx.input.getAccelerometerX();
-			if (adjustedMovement < -0.3f)
-			{
-				character.moveUp();
-			}
-			else if (adjustedMovement > 2.3f)
-			{
-				character.moveDown();
-			} 
-			else 
-			{
-				character.stopVerticalMove();
+		if (Constant.CHAR_CONTROL == Constant.TILT) {
+			if (Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer)) {
+				float adjustedMovement = (Gdx.input.getAccelerometerY());
+				//Gdx.app.debug("Crypt", "AccelerometerY : " + adjustedMovement);
+				if (adjustedMovement < -0.5f) {
+					character.moveLeft();
+				} else if (adjustedMovement > 0.5f) {
+					character.moveRight();
+				} else {
+					character.stopHoziontialMove();
+				}
+
+				adjustedMovement = Gdx.input.getAccelerometerX();
+				if (adjustedMovement < -0.3f) {
+					character.moveUp();
+				} else if (adjustedMovement > 2.3f) {
+					character.moveDown();
+				} else {
+					character.stopVerticalMove();
+				}
 			}
 		}
 	}
@@ -189,7 +185,16 @@ public class WorldController implements InputProcessor
 	 */
 	public void addbullet(float x , float y)
 	{
-		int centerx = Gdx.graphics.getWidth() /2;
+		int centerx;
+		
+		if(Constant.CHAR_CONTROL == Constant.JOYSTICK)
+		{
+			centerx = Gdx.graphics.getWidth() - Gdx.graphics.getWidth() / 7;
+		}
+		else
+		{
+			centerx = Gdx.graphics.getWidth() /2;
+		}
 		int height = Gdx.graphics.getHeight();
 		int centreThirdFrom = height/3;
 		int centreThirdTo = height /3 * 2;
@@ -237,11 +242,6 @@ public class WorldController implements InputProcessor
 	{
 		// get characters position
 		return character.getCharacterPosition();
-	}
-	
-	public Rectangle getCharacterBounds()
-	{
-		return character.getCharacterBounds();
 	}
 	
 	public Rectangle getCharacterCollisionBounds()
@@ -314,18 +314,78 @@ public class WorldController implements InputProcessor
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) 
 	{
-		addbullet(screenX, screenY);
+		// check if the touch is on the joystick pad or a fire touch
+		touchPoint = renderer.unprojected(screenX, screenY);
+		if (renderer.touchPad.contains(touchPoint.x, touchPoint.y))
+		{
+			direction = renderer.joystickMovement(touchPoint.x, touchPoint.y);
+			
+			// horizontal movement
+			if (direction.x < -renderer.touchPad.radius / 10) {
+				character.moveRight();
+			} else if (direction.x > renderer.touchPad.radius / 10) {
+				character.moveLeft();
+			} else {
+				character.stopHoziontialMove();
+			}
+
+			// vertical movement
+			if (direction.y < -renderer.touchPad.radius / 10) {
+				character.moveUp();
+			} else if (direction.y > renderer.touchPad.radius / 10) {
+				character.moveDown();
+			} else {
+				character.stopVerticalMove();
+			}	
+		}
+		else
+		{
+			addbullet(screenX, screenY);
+		}
 		return true;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		return false;
+		// check if the touch was on the joystick pad
+		touchPoint = renderer.unprojected(screenX, screenY);
+		{
+			// stop all movement
+			character.stopHoziontialMove();
+			character.stopHoziontialMove();
+			character.stopVerticalMove();
+			character.stopVerticalMove();
+		}
+		return true;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return false;
+		// check if the touch is on the joystick pad
+		touchPoint = renderer.unprojected(screenX, screenY);
+		if (renderer.touchPad.contains(touchPoint.x, touchPoint.y))
+		{
+			direction = renderer.joystickMovement(touchPoint.x, touchPoint.y);
+			
+			// horizontal movement
+			if (direction.x < -renderer.touchPad.radius / 10) {
+				character.moveRight();
+			} else if (direction.x > renderer.touchPad.radius / 10) {
+				character.moveLeft();
+			} else {
+				character.stopHoziontialMove();
+			}
+
+			// vertical movement
+			if (direction.y < -renderer.touchPad.radius / 10) {
+				character.moveUp();
+			} else if (direction.y > renderer.touchPad.radius / 10) {
+				character.moveDown();
+			} else {
+				character.stopVerticalMove();
+			}	
+		}
+		return true;
 	}
 
 	@Override
