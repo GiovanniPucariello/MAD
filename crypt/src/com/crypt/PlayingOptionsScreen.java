@@ -1,13 +1,7 @@
 package com.crypt;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.StringTokenizer;
 
-import sun.rmi.runtime.Log;
-
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
@@ -183,8 +177,13 @@ public class PlayingOptionsScreen implements Screen
 		stylePassBut.down = graphicSkin.getDrawable("SquareNotChecked");
 		stylePassBut.checked = graphicSkin.getDrawable("SquareChecked");
 		
-		Button buttonPassBlack = new Button(stylePassBut);
-		buttonPassBlack.setColor(0, 0, 0, 1);
+		TextButtonStyle styleStdPassBut = new TextButtonStyle();
+		styleStdPassBut.up = graphicSkin.getDrawable("StandardNotChecked");
+		styleStdPassBut.down = graphicSkin.getDrawable("StandardNotChecked");
+		styleStdPassBut.checked = graphicSkin.getDrawable("StandardChecked");
+		
+		Button buttonPassBlack = new Button(styleStdPassBut);
+		buttonPassBlack.setColor(1, 1, 1, 1);
 		buttonPassBlack.setX(430 + offsetX);
 		buttonPassBlack.setY(440 + offsetY);
 		if (blackground == 0) buttonPassBlack.setChecked(true);

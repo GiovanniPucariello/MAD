@@ -318,25 +318,7 @@ public class WorldController implements InputProcessor
 		touchPoint = renderer.unprojected(screenX, screenY);
 		if (renderer.touchPad.contains(touchPoint.x, touchPoint.y))
 		{
-			direction = renderer.joystickMovement(touchPoint.x, touchPoint.y);
-			
-			// horizontal movement
-			if (direction.x < -renderer.touchPad.radius / 10) {
-				character.moveRight();
-			} else if (direction.x > renderer.touchPad.radius / 10) {
-				character.moveLeft();
-			} else {
-				character.stopHoziontialMove();
-			}
-
-			// vertical movement
-			if (direction.y < -renderer.touchPad.radius / 10) {
-				character.moveUp();
-			} else if (direction.y > renderer.touchPad.radius / 10) {
-				character.moveDown();
-			} else {
-				character.stopVerticalMove();
-			}	
+			touchpadMovement(touchPoint);
 		}
 		else
 		{
@@ -365,25 +347,7 @@ public class WorldController implements InputProcessor
 		touchPoint = renderer.unprojected(screenX, screenY);
 		if (renderer.touchPad.contains(touchPoint.x, touchPoint.y))
 		{
-			direction = renderer.joystickMovement(touchPoint.x, touchPoint.y);
-			
-			// horizontal movement
-			if (direction.x < -renderer.touchPad.radius / 10) {
-				character.moveRight();
-			} else if (direction.x > renderer.touchPad.radius / 10) {
-				character.moveLeft();
-			} else {
-				character.stopHoziontialMove();
-			}
-
-			// vertical movement
-			if (direction.y < -renderer.touchPad.radius / 10) {
-				character.moveUp();
-			} else if (direction.y > renderer.touchPad.radius / 10) {
-				character.moveDown();
-			} else {
-				character.stopVerticalMove();
-			}	
+			touchpadMovement(touchPoint);
 		}
 		return true;
 	}
@@ -401,5 +365,28 @@ public class WorldController implements InputProcessor
 	public void setRender(WorldRenderer renderer) {
 		this.renderer = renderer;
 		
+	}
+	
+	private void touchpadMovement(Vector3 touchPoint)
+	{
+		direction = renderer.joystickMovement(touchPoint.x, touchPoint.y);
+		
+		// horizontal movement
+		if (direction.x < -renderer.touchPad.radius / 7) {
+			character.moveRight();
+		} else if (direction.x > renderer.touchPad.radius / 7) {
+			character.moveLeft();
+		} else {
+			character.stopHoziontialMove();
+		}
+
+		// vertical movement
+		if (direction.y < -renderer.touchPad.radius / 7) {
+			character.moveUp();
+		} else if (direction.y > renderer.touchPad.radius / 7) {
+			character.moveDown();
+		} else {
+			character.stopVerticalMove();
+		}	
 	}
 }

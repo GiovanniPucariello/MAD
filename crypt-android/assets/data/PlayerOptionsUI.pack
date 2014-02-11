@@ -94,9 +94,23 @@ SquareNotChecked
   orig: 32, 100
   offset: 0, 0
   index: -1
+StandardChecked
+  rotate: false
+  xy: 940, 73
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
+StandardNotChecked
+  rotate: false
+  xy: 848, 5
+  size: 70, 70
+  orig: 70, 70
+  offset: 0, 0
+  index: -1
 radioNotChecked
   rotate: false
-  xy: 940, 84
+  xy: 920, 12
   size: 59, 59
   orig: 59, 59
   offset: 0, 0

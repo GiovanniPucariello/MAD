@@ -31,8 +31,11 @@ public class Background
 			i++;
 		}
 		
-		// uncomment this line to enable different backgrounds
-		blocks[0] = new TextureRegion(new Texture(Gdx.files.internal("data/Transparent.png")));
+		if (Constant.PASSAGEWAY_COLOUR !=0) 
+		{
+			blocks[Constant.BLOCKVALUES.PASSAGE_NO_WALK.getValue()] = new TextureRegion(new Texture(Gdx.files.internal("data/Transparent.png")));
+			blocks[Constant.BLOCKVALUES.PASSAGE.getValue()] = new TextureRegion(new Texture(Gdx.files.internal("data/Transparent.png")));
+		}
 	}
 	
 	void draw(SpriteBatch batch, Rectangle viewport)
