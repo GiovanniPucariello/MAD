@@ -314,17 +314,15 @@ public class WorldController implements InputProcessor
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) 
 	{
-		if (Constant.CHAR_CONTROL == Constant.JOYSTICK) {
-			// check if the touch is on the joystick pad or a fire touch
-			touchPoint = renderer.unprojected(screenX, screenY);
-			if (renderer.touchPad.contains(touchPoint.x, touchPoint.y)) {
-				touchpadMovement(touchPoint);
-			} else {
-				addbullet(screenX, screenY);
-			}
-			return true;
+		// check if the touch is on the joystick pad or a fire touch
+		touchPoint = renderer.unprojected(screenX, screenY);
+		if (Constant.CHAR_CONTROL == Constant.JOYSTICK && renderer.touchPad.contains(touchPoint.x, touchPoint.y)) {
+			touchpadMovement(touchPoint);
+			
+		} else {
+			addbullet(screenX, screenY);
 		}
-		return false;
+		return true;
 	}
 
 	@Override
@@ -351,6 +349,7 @@ public class WorldController implements InputProcessor
 			touchPoint = renderer.unprojected(screenX, screenY);
 			if (renderer.touchPad.contains(touchPoint.x, touchPoint.y)) {
 				touchpadMovement(touchPoint);
+				
 			}
 			return true;
 		}

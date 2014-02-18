@@ -35,7 +35,9 @@ public class WorldRenderer implements Disposable {
 	
 	// Joystick Area
 	public Circle touchPad = new Circle();
+	public Circle touchpadLimit = new Circle();
 	private Vector2 joystickMovement = new Vector2();
+	private Circle touchPadLimit;
 		
 	public WorldRenderer (WorldController world) 
 	{
@@ -126,7 +128,8 @@ public class WorldRenderer implements Disposable {
 			//******* render touch pad last if turned on *************
 			if (Constant.CHAR_CONTROL == Constant.JOYSTICK)
 			{
-				batch.draw(joystick, viewPort.x, viewPort.y, joystickSize, joystickSize);
+				//batch.draw(joystick, viewPort.x, viewPort.y, joystickSize, joystickSize);
+				batch.draw(joystick, touchPad.x-touchPad.radius, touchPad.y-touchPad.radius, joystickSize, joystickSize);
 			}
 		batch.end();
 	}
@@ -145,6 +148,7 @@ public class WorldRenderer implements Disposable {
 		// Adjust the joystick size
 		joystickSize = ((float)Constant.NUM_ROWS / 12) * 192;
 		touchPad = new Circle(joystickSize / 2, viewPort.y + joystickSize / 2, joystickSize/2);
+		touchPadLimit = new Circle(joystickSize / 2, viewPort.y + joystickSize / 2, joystickSize/2+joystickSize/6);
 	}
 	
 	@Override public void dispose()
