@@ -314,42 +314,47 @@ public class WorldController implements InputProcessor
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) 
 	{
-		// check if the touch is on the joystick pad or a fire touch
-		touchPoint = renderer.unprojected(screenX, screenY);
-		if (renderer.touchPad.contains(touchPoint.x, touchPoint.y))
-		{
-			touchpadMovement(touchPoint);
+		if (Constant.CHAR_CONTROL == Constant.JOYSTICK) {
+			// check if the touch is on the joystick pad or a fire touch
+			touchPoint = renderer.unprojected(screenX, screenY);
+			if (renderer.touchPad.contains(touchPoint.x, touchPoint.y)) {
+				touchpadMovement(touchPoint);
+			} else {
+				addbullet(screenX, screenY);
+			}
+			return true;
 		}
-		else
-		{
-			addbullet(screenX, screenY);
-		}
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// check if the touch was on the joystick pad
-		touchPoint = renderer.unprojected(screenX, screenY);
-		{
-			// stop all movement
-			character.stopHoziontialMove();
-			character.stopHoziontialMove();
-			character.stopVerticalMove();
-			character.stopVerticalMove();
+		if (Constant.CHAR_CONTROL == Constant.JOYSTICK) {
+			// check if the touch was on the joystick pad
+			touchPoint = renderer.unprojected(screenX, screenY);
+			{
+				// stop all movement
+				character.stopHoziontialMove();
+				character.stopHoziontialMove();
+				character.stopVerticalMove();
+				character.stopVerticalMove();
+			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// check if the touch is on the joystick pad
-		touchPoint = renderer.unprojected(screenX, screenY);
-		if (renderer.touchPad.contains(touchPoint.x, touchPoint.y))
-		{
-			touchpadMovement(touchPoint);
+		if (Constant.CHAR_CONTROL == Constant.JOYSTICK) {
+			// check if the touch is on the joystick pad
+			touchPoint = renderer.unprojected(screenX, screenY);
+			if (renderer.touchPad.contains(touchPoint.x, touchPoint.y)) {
+				touchpadMovement(touchPoint);
+			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	@Override

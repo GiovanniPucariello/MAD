@@ -1,8 +1,12 @@
 package com.crypt;
 
+import java.util.StringTokenizer;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -34,6 +38,11 @@ public class MainMenuScreen implements Screen
 	
 	private final int SCREEN_HEIGHT = 768;
 	
+	private String[] hsName = new String[10];
+	private String[] hsScore = new String[10];
+	private float highScoreX;
+	private float highScoreY;
+	
 	public MainMenuScreen(Crypt game) 
 	{
 		this.game = game;
@@ -52,6 +61,18 @@ public class MainMenuScreen implements Screen
 		batch.begin();
 		stage.draw();
 		batch.end();
+		batch.begin();
+			float y = highScoreY;
+			
+			// display loaded data
+			for(int i =0; i<10; i++)
+			{
+				font.draw(batch, hsName[i], highScoreX, y);
+				font.draw(batch, hsScore[i], highScoreX+100, y);
+				y -= 43;
+			}
+		batch.end();
+
 	}
 
 	@Override
@@ -127,6 +148,19 @@ public class MainMenuScreen implements Screen
 		labelHighScores.setX((parchwidth / 2) - (labelHighScores.getWidth()/ 2) + 50);
 		labelHighScores.setY(parchheight - 50);
 		
+		// add element to the stage
+		stage.addActor(parchmentbackground);
+		stage.addActor(buttonPlay);
+		stage.addActor(buttonPlayOptions);
+		stage.addActor(buttonLevelPick);
+		stage.addActor(buttonGamePick);
+		stage.addActor(buttonEditor);
+		stage.addActor(labelHighScores);
+		
+		// set display position for the current high scores
+		highScoreX = (parchwidth / 2) - (labelHighScores.getWidth()/ 2) -130;
+		highScoreY = parchheight - 190;
+		
 		buttonEditor.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
 			{
@@ -196,16 +230,8 @@ public class MainMenuScreen implements Screen
 				game.setScreen(new GameScreen(game));
 			}
 		});
-		
-		stage.addActor(parchmentbackground);
-		stage.addActor(buttonPlay);
-		stage.addActor(buttonPlayOptions);
-		stage.addActor(buttonLevelPick);
-		stage.addActor(buttonGamePick);
-		stage.addActor(buttonEditor);
-		stage.addActor(labelHighScores);
 	}
-
+	
 	@Override
 	public void show() {
 		batch = new SpriteBatch();
@@ -218,8 +244,13 @@ public class MainMenuScreen implements Screen
 		
 		buttonClick = Gdx.audio.newSound(Gdx.files.internal("data/buttonClick.mp3"));
 				
-		font = new BitmapFont(Gdx.files.internal("data/TahomaFont.fnt"), false);
+		//font = new BitmapFont(Gdx.files.internal("data/TahomaFont.fnt"), false);
+		font = new BitmapFont(Gdx.files.internal("data/Buxton.fnt"), false);
+		font.setColor(Color.BLACK);
 		
+		// load high scores data
+		loadHighScore();
+		hsScore[0] = "000000000";
 	}
 
 	@Override
@@ -249,4 +280,27 @@ public class MainMenuScreen implements Screen
 		stage.dispose();
 	}
 
+	private void loadHighScore()
+	{
+		// initialise high scores in case the file is empty
+		for(int i=0; i<10; i++)
+		{
+			hsName[i] = "AAA";
+			hsScore[i] = "000000000";
+		}
+		
+		FileHandle file = Gdx.files.local("HighScores.csv");
+		if (Gdx.files.local("HighScores.csv").exists()) {
+			String line = file.readString();
+			StringTokenizer token = new StringTokenizer(line, ",");
+						
+			int i = 0;
+			while(token.hasMoreTokens() && i < 10)
+			{
+				hsName[i] = token.nextToken();
+				if(hsName[i].length()>3) hsName[i].substring(3);
+				hsScore[i] = String.format("%09d", Integer.parseInt(token.nextToken()));
+			}
+		}
+	}
 }
