@@ -26,6 +26,7 @@ public class WorldController implements InputProcessor
 	private WorldRenderer renderer;
 	public MonsterRegister monsterRegister;
 	public SpawnSiteReg spawnSiteReg;
+	public touchPad touchPad;
 	
 	// current level
 	private int currentlevel = 1;
@@ -37,6 +38,7 @@ public class WorldController implements InputProcessor
 	// unprojected screen touch position
 	private Vector3 touchPoint = new Vector3();
 	private Vector2 direction = new Vector2();
+	private Vector2 lastDragPos = new Vector2();
 	
 	public WorldController() 
 	{
@@ -48,6 +50,8 @@ public class WorldController implements InputProcessor
 		background = new Background(levelMap);
 		// Instantiate character
 		character = new Character(this, levelMap, assets.getCharAnim(), assets.getCharTeleport());
+		// touchpad
+		touchPad = new touchPad(character);
 		// instantiate KeyRegister
 		keyRegister = new KeyRegister(levelMap, assets.getKeyImages());
 		// instantiate TreasureRegister
@@ -330,12 +334,16 @@ public class WorldController implements InputProcessor
 		if (Constant.CHAR_CONTROL == Constant.JOYSTICK) {
 			// check if the touch was on the joystick pad
 			touchPoint = renderer.unprojected(screenX, screenY);
-			{
+			if (renderer.touchPadLimit.contains(touchPoint.x, touchPoint.y)){
 				// stop all movement
 				character.stopHoziontialMove();
 				character.stopHoziontialMove();
 				character.stopVerticalMove();
 				character.stopVerticalMove();
+				
+				// reset the touchpad position and last drag position
+				renderer.touchPadCentre = new Vector2(0,0);
+				lastDragPos = new Vector2(0,0);
 			}
 			return true;
 		}
@@ -347,9 +355,27 @@ public class WorldController implements InputProcessor
 		if (Constant.CHAR_CONTROL == Constant.JOYSTICK) {
 			// check if the touch is on the joystick pad
 			touchPoint = renderer.unprojected(screenX, screenY);
+			
 			if (renderer.touchPad.contains(touchPoint.x, touchPoint.y)) {
 				touchpadMovement(touchPoint);
+			} else if (renderer.touchPadLimit.contains(touchPoint.x, touchPoint.y)) {
+				// finger has dragged slightly outside the joystick but within the limit
+				// angle of drag
+				float adj = touchPoint.x - renderer.touchPad.x;
+				float opp = touchPoint.y - renderer.touchPad.y;
 				
+				// calculate existing angle and correct it				
+				double dAngle = Math.toDegrees(Math.atan2(opp, adj));
+				if(dAngle < 0) dAngle += 360;
+				
+				// flip the angle to the opposite direction 
+				if (dAngle - 180 < 0) dAngle += 180; else dAngle -= 180;
+				
+				// calculate the new centre position for the pad
+				renderer.touchPadCentre.x += adj + (renderer.touchPad.radius * Math.cos(Math.toRadians(dAngle)));
+				renderer.touchPadCentre.y += opp + (renderer.touchPad.radius * Math.sin(Math.toRadians(dAngle)));
+				
+				touchpadMovement(touchPoint);
 			}
 			return true;
 		}

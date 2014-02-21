@@ -35,9 +35,9 @@ public class WorldRenderer implements Disposable {
 	
 	// Joystick Area
 	public Circle touchPad = new Circle();
-	public Circle touchpadLimit = new Circle();
+	public Circle touchPadLimit = new Circle();
 	private Vector2 joystickMovement = new Vector2();
-	private Circle touchPadLimit;
+	public Vector2 touchPadCentre = new Vector2(0,0);
 		
 	public WorldRenderer (WorldController world) 
 	{
@@ -231,8 +231,10 @@ public class WorldRenderer implements Disposable {
 		}
 		
 		// update the position of the touchpad
-		touchPad.y = viewPort.y + joystickSize / 2;
-		touchPad.x = viewPort.x + joystickSize / 2;
+		touchPad.y = viewPort.y + joystickSize / 2 + touchPadCentre.y;
+		touchPad.x = viewPort.x + joystickSize / 2 + touchPadCentre.x;
+		touchPadLimit.x = touchPad.x;
+		touchPadLimit.y = touchPad.y;
 		
 		return viewPort;
 	}
