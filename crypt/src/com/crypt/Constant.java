@@ -1,8 +1,5 @@
 package com.crypt;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.StringTokenizer;
 
 import com.badlogic.gdx.Gdx;

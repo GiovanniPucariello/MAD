@@ -26,7 +26,6 @@ public class WorldController implements InputProcessor
 	private WorldRenderer renderer;
 	public MonsterRegister monsterRegister;
 	public SpawnSiteReg spawnSiteReg;
-	public touchPad touchPad;
 	
 	// current level
 	private int currentlevel = 1;
@@ -38,7 +37,6 @@ public class WorldController implements InputProcessor
 	// unprojected screen touch position
 	private Vector3 touchPoint = new Vector3();
 	private Vector2 direction = new Vector2();
-	private Vector2 lastDragPos = new Vector2();
 	
 	public WorldController() 
 	{
@@ -50,8 +48,6 @@ public class WorldController implements InputProcessor
 		background = new Background(levelMap);
 		// Instantiate character
 		character = new Character(this, levelMap, assets.getCharAnim(), assets.getCharTeleport());
-		// touchpad
-		touchPad = new touchPad(character);
 		// instantiate KeyRegister
 		keyRegister = new KeyRegister(levelMap, assets.getKeyImages());
 		// instantiate TreasureRegister
@@ -343,7 +339,6 @@ public class WorldController implements InputProcessor
 				
 				// reset the touchpad position and last drag position
 				renderer.touchPadCentre = new Vector2(0,0);
-				lastDragPos = new Vector2(0,0);
 			}
 			return true;
 		}
