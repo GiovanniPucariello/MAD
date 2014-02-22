@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -54,7 +55,7 @@ public class WorldController implements InputProcessor
 		treasureSites = new TreasureRegister(levelMap, assets.getTreasureImages());
 		// make a bullet Register
 		// Instantiate MonsterRegister
-		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim(), assets.getBatAnim(), assets.getSnakeAnim());
+		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim(), assets.getBatAnim(), assets.getSnakeAnim(), assets.getGhostAnim());
 		bulletreg = new BulletRegister(this, levelMap, monsterRegister, assets.getBulletAnim());
 		// Instantiate DoorRegister
 		doorSites = new DoorRegister(levelMap, assets.getDoorClosed(), assets.getOpeningDoor());
@@ -235,7 +236,6 @@ public class WorldController implements InputProcessor
 			bulletDirection.y = -1;
 			bulletreg.add(bulletDirection,bulletStart);
 		}
-
 	}
 	
 	public Vector2 getCharacterPosition()
@@ -247,6 +247,11 @@ public class WorldController implements InputProcessor
 	public Rectangle getCharacterCollisionBounds()
 	{
 		return character.getCollisionBounds();
+	}
+	
+	public Rectangle getCharacterBounds()
+	{
+		return character.getCharacterBounds();
 	}
 	
 	public LevelMap getLevelMap()
