@@ -55,7 +55,7 @@ public class WorldController implements InputProcessor
 		treasureSites = new TreasureRegister(levelMap, assets.getTreasureImages());
 		// make a bullet Register
 		// Instantiate MonsterRegister
-		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim(), assets.getBatAnim(), assets.getSnakeAnim(), assets.getGhostAnim());
+		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim(), assets.getBatAnim(), assets.getSnakeAnim());
 		bulletreg = new BulletRegister(this, levelMap, monsterRegister, assets.getBulletAnim());
 		// Instantiate DoorRegister
 		doorSites = new DoorRegister(levelMap, assets.getDoorClosed(), assets.getOpeningDoor());
