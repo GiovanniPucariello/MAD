@@ -9,6 +9,8 @@ import com.badlogic.gdx.utils.Array;
 
 public abstract class Entity 
 {
+	protected boolean transparent = false;
+	
 	// velocity x & y should only be set to -1, 0 , 1
 	protected Vector2 velocity = new Vector2(0,0);
 	
@@ -44,7 +46,9 @@ public abstract class Entity
 	protected Vector2 movement = new Vector2(0,0);
 	
 	// statetime used to calculate the correct image to display
-	private float stateTime;
+	protected float stateTime;
+	
+	protected float deltaTime;
 	
 	// time entity has been off screen
 	protected float offScreenTimer;
@@ -55,7 +59,7 @@ public abstract class Entity
 	protected float randomIntervalTimer = 0;
 	
 	// animation collection indexed as shown below
-	private Animation[] animation = new Animation[4];
+	protected Animation[] animation = new Animation[4];
 	
 	// animation indexes
 	private int up = 0;
@@ -108,7 +112,7 @@ public abstract class Entity
 				updateCollisionBounds();
 
 				// check and validate movement
-				if (levelMap.canIMove(bounds, movement) == false) {
+				if (levelMap.canIMove(bounds, movement, animation, false) == false) {
 					// check returned movement to see if it did not move vertically or horizontally
 					if (movement.x == 0 && movement.y == 0) {
 						changeDirection();
@@ -140,7 +144,7 @@ public abstract class Entity
 		}
 	}
 	
-	private boolean collided(Array<Entity> monsters)
+	public boolean collided(Array<Entity> monsters)
 	{
 		// check if collection contains items to check
 		if (monsters != null)
@@ -148,7 +152,7 @@ public abstract class Entity
 			for (int index = 0; index < monsters.size; index++) 
 			{
 		        Entity creature = monsters.get(index);
-				if (creature != this)
+				if (creature != this  && creature.transparent == false)
 				{
 					if (bounds.overlaps(creature.bounds))
 					{
@@ -160,7 +164,7 @@ public abstract class Entity
 		return false;
 	}
 
-	private void checkOffScreen(float deltaTime, Rectangle Viewport) {
+	protected void checkOffScreen(float deltaTime, Rectangle Viewport) {
 		if (!Viewport.overlaps(bounds)) 
 		{
 			onScreen = false;
@@ -173,7 +177,7 @@ public abstract class Entity
 		}
 	}
 
-	private void updateCollisionBounds() {
+	protected void updateCollisionBounds() {
 		// update collision bounds
 		collisionBounds.set(bounds);
 		

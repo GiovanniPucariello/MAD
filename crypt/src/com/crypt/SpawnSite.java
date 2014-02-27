@@ -107,7 +107,7 @@ public class SpawnSite
 					timeSinceLastMonster = 0;
 					spawningNow = true;
 					spawnSound.play();
-					int creatureType = picACreature();
+					int creatureType = picACreature(spawnTypes);
 					monsterRef = monsterReg.addMonster(id, creatureType,
 							position, false);
 				}
@@ -120,7 +120,7 @@ public class SpawnSite
 						timeSinceLastMonster = 0;
 						spawningNow = true;
 						spawnSound.play();
-						int creatureType = picACreature();
+						int creatureType = picACreature(spawnTypes);
 						monsterRef = monsterReg.addMonster(id, creatureType,
 								position, false);
 					}
@@ -129,24 +129,87 @@ public class SpawnSite
 		}
 	}
 	
-	private int picACreature()
+	private int picACreature(int spawnTypes)
 	{
-		// temporary 1 = mummy; 2 = snake; 4 = bat;
-		int creatureType = randomGenerator.nextInt(3);
+		//1 = mummy; 2 = snake; 4 = bat; 6 = ghost;
+		int creatureType = 1;
 		
-		if (creatureType == 0) 
-		{	
-			creatureType = 1;
-		}
-		else if (creatureType == 1)
-		{ 
-			creatureType = 2;
-		}
-		else if (creatureType == 2)
-		{ 
-			creatureType = 4;
+		if(spawnTypes == 1)
+		{
+			creatureType = 1;						
 		}
 		
+		if(spawnTypes == 2)
+		{
+			creatureType = 2;						
+		}
+
+		if(spawnTypes == 3)
+		{
+			creatureType = 4;							
+		}
+			
+		if(spawnTypes == 4)
+		{
+			creatureType = 6;			
+		}
+		
+		//Mummies and snakes
+		if(spawnTypes == 5)
+		{
+			creatureType = randomGenerator.nextInt(2);
+			
+			if (creatureType == 0)
+			{
+				creatureType = 1;
+			}
+			else
+			{
+				creatureType = 2;
+			}
+		}
+
+		//Mummies, snakes and bats
+		if(spawnTypes == 6)
+		{
+			creatureType = randomGenerator.nextInt(3);
+			
+			if (creatureType == 0)
+			{
+				creatureType = 1;
+			}
+			else if(creatureType == 1)
+			{
+				creatureType = 2;
+			}
+			else if(creatureType == 2)
+			{
+				creatureType = 4;
+			}
+		}
+
+		//Mummies, snakes, bats and ghosts	
+		if(spawnTypes == 7)
+		{
+			creatureType = randomGenerator.nextInt(4);
+			
+			if (creatureType == 0)
+			{
+				creatureType = 1;
+			}
+			else if(creatureType == 1)
+			{
+				creatureType = 2;
+			}
+			else if(creatureType == 2)
+			{
+				creatureType = 4;
+			}
+			else if(creatureType == 3)
+			{
+				creatureType = 6;
+			}
+		}
 		return creatureType;
 	}
 	
@@ -168,8 +231,5 @@ public class SpawnSite
 			// draw animation
 			batch.draw(currentFrame, position.x, position.y);
 		}
-		
 	}
-	
-
 }

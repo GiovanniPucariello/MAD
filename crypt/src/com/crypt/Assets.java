@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Assets 
 {
 	// asset objects
+	private EntityAnimations ghost = new EntityAnimations("data/GhostSprite.png",19,0.5f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
 	private EntityAnimations character = new EntityAnimations("data/ManSprites.png", 9, 0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
 	private EntityAnimations mummy = new EntityAnimations("data/MummySprite3.png",4,0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
 	private EntityAnimations bat = new EntityAnimations("data/BatSprite.png",4,0.05f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
@@ -26,8 +27,8 @@ public class Assets
 		return character.getAnimations();
 	}
 	
-	public Animation[] getBulletAnim(){
-		//bullet = new Texture(Gdx.files.internal("data/bullet2.png"));
+	public Animation[] getBulletAnim()
+	{
 	    return bullet.getAnimations();
 	}
 
@@ -49,6 +50,11 @@ public class Assets
 	public Animation[] getSnakeAnim()
 	{
 		return snake.getAnimations();
+	}
+	
+	public Animation[] getGhostAnim()
+	{
+		return ghost.getAnimations();
 	}
 	
 	public TextureRegion[] getTreasureImages()

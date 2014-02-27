@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class EntityAnimations {
 
 	// animation class
-	private Animation[] animation = new Animation[10];
+	private Animation[] animation = new Animation[25];
 
 	// animation arranged as so
 	// animation[0] is UP and contains texture array 1,2,3 etc.

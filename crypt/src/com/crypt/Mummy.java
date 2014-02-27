@@ -184,7 +184,6 @@ public class Mummy extends Entity
 			
 		while (velocity.x == 0.0 && velocity.y == 0.0) 
 		{
-			System.out.println("STUCK! FIXING...");
 			velocity.x = randomGenerator.nextInt(3)-1;
 			velocity.y = randomGenerator.nextInt(3)-1;
 		}

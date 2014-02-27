@@ -221,7 +221,7 @@ public class Character
 				else
 				{
 					// check and validate movement
-					levelMap.canIMove(bounds, movement);
+					levelMap.canIMove(bounds, movement, animation, false);
 				}
 			}
 			else

@@ -14,6 +14,7 @@ public class MonsterRegister
 {
 	private WorldController worldController;
 	private LevelMap levelMap;
+	private Animation[] ghostAnimation = new Animation[5];
 	private Animation[] mummyAnimation = new Animation[5];
 	private Animation[] batAnimation = new Animation[5];
 	private Animation[] snakeAnimation = new Animation[5];
@@ -22,7 +23,7 @@ public class MonsterRegister
 	
 	public Array<Entity> monsters;
 	
-	public MonsterRegister(WorldController worldController, LevelMap levelMap, Animation[] mummyAnimation, Animation[] batAnimation, Animation[] snakeAnimation)
+	public MonsterRegister(WorldController worldController, LevelMap levelMap, Animation[] mummyAnimation, Animation[] batAnimation, Animation[] snakeAnimation, Animation[] ghostAnimation)
 	{
 		// Create monster array
 		this.monsters = new Array<Entity>();
@@ -31,6 +32,7 @@ public class MonsterRegister
 		
 		this.worldController = worldController;
 		this.levelMap = levelMap;
+		this.ghostAnimation = ghostAnimation;
 		this.mummyAnimation = mummyAnimation;
 		this.snakeAnimation = snakeAnimation;
 		this.batAnimation = batAnimation;
@@ -75,6 +77,8 @@ public class MonsterRegister
 		case 4 :
 			creatureToAdd = new Bat(worldController, position, batAnimation, levelMap, spawnSiteID, active);
 			break;
+		case 6 :
+			creatureToAdd = new Ghost(worldController, position, ghostAnimation, levelMap, spawnSiteID, active);
 		}
 		
 		// if creature selected add it

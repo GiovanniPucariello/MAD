@@ -15,12 +15,14 @@ import com.badlogic.gdx.utils.IntArray;
 
 public class LevelMap 
 {
+	private WorldController worldController;
+	
 	// Level collection of row collections of column collection e.g. cells
 	private Array<Array<IntArray>> level;
 	
 	// Spawn site information (one line for all sites - 
 	// contains (site id; trigger area x,y,width,height - in blocks; 
-	// max creatures for is site; types of creatures - 1 = mummys, 2 = snake, 4 = bat)
+	// max creatures for is site; types of creatures - 1 = mummys, 2 = snake, 4 = bat, 6 = ghost)
 	private Array<String> spawnSiteInfo = new Array<String>();
 	
 	// the current level
@@ -47,8 +49,9 @@ public class LevelMap
 	
 	private Vector2 movementStep = new Vector2(0,0);
 	
-	LevelMap()
+	LevelMap(WorldController worldController)
 	{
+		this.worldController = worldController;
 		// Open level data		
 		FileHandle file = Gdx.files.internal("data/DemoLevel.csv");
 		BufferedReader br = null;
@@ -351,7 +354,7 @@ public class LevelMap
 		return mapHeight[thisLevel] * Constant.BLOCK_SIZE;
 	}
 	
-	public boolean canIMove(Rectangle bounds, Vector2 movement)
+	public boolean canIMove(Rectangle bounds, Vector2 movement, Animation[] animation, boolean transparent)
 	{
 		float x, y, xstep, ystep;
 		int loop = 0;
@@ -401,7 +404,7 @@ public class LevelMap
 		for(int i = 0; i < loop; i++)
 		{
 			movementStep.set(xstep, ystep);
-			if (eachMove(bounds,movementStep) == false)
+			if (eachMove(bounds,movementStep, animation, transparent) == false)
 			{
 				collisionFlag = false;
 			}
@@ -411,7 +414,7 @@ public class LevelMap
 		return collisionFlag;
 	}
 	
-	private boolean eachMove(Rectangle bounds, Vector2 movement)
+	private boolean eachMove(Rectangle bounds, Vector2 movement, Animation[] animation, boolean transparent)
 	{
 		boolean collisionFlag = true;
 		// check for moving left
@@ -430,7 +433,7 @@ public class LevelMap
 				collisionFlag = false;
 			}
 			// check if right edge of bounds has collisions 
-			if (notPath(bounds.x, bounds.y) || notPath(bounds.x, bounds.y + bounds.height))
+			if (notPath(bounds.x, bounds.y, animation, transparent) || notPath(bounds.x, bounds.y + bounds.height, animation, transparent))
 			{
 				// cannot move this far from present position
 				// adjust position to nearest block
@@ -456,7 +459,7 @@ public class LevelMap
 				collisionFlag = false;
 			}
 			// check if right edge of bounds has collisions
-			if (notPath(bounds.x + bounds.width, bounds.y) || notPath(bounds.x + bounds.width, bounds.y + bounds.height))
+			if (notPath(bounds.x + bounds.width, bounds.y, animation, transparent) || notPath(bounds.x + bounds.width, bounds.y + bounds.height, animation, transparent))
 			{
 				// cannot move this far from present position
 				// adjust position to nearest block
@@ -482,7 +485,7 @@ public class LevelMap
 				collisionFlag = false;
 			}
 			// check if bottom edge of bounds has collisions 
-			if (notPath(bounds.x, bounds.y) || notPath(bounds.x + bounds.width, bounds.y))
+			if (notPath(bounds.x, bounds.y, animation, transparent) || notPath(bounds.x + bounds.width, bounds.y, animation, transparent))
 			{
 				// cannot move this far from present position
 				// adjust position to nearest block
@@ -508,7 +511,7 @@ public class LevelMap
 				collisionFlag = false;
 			}
 			// check if top edge of bounds has collisions
-			if (notPath(bounds.x, bounds.y + bounds.height) || notPath(bounds.x + bounds.width, bounds.y + bounds.height))
+			if (notPath(bounds.x, bounds.y + bounds.height, animation, transparent) || notPath(bounds.x + bounds.width, bounds.y + bounds.height, animation, transparent))
 			{
 				// cannot move this far from present position
 				// adjust position to nearest block
@@ -522,15 +525,18 @@ public class LevelMap
 		return collisionFlag;
 	}
 	
-	private boolean notPath(float x, float y)
+	private boolean notPath(float x, float y, Animation[] animation, boolean transparent)
 	{
 		// convert x & y to block references
 		int xblock = (int) (x / Constant.BLOCK_SIZE);
 		int yblock = (int) (y / Constant.BLOCK_SIZE);
 		
-		if (Cell(xblock, yblock) !=  Constant.BLOCKVALUES.PASSAGE.getValue()){
+		if (Cell(xblock, yblock) !=  Constant.BLOCKVALUES.PASSAGE.getValue() && animation != worldController.getGhostAnim()){
 			return true;
 		}
+		else if (Cell(xblock, yblock) !=  Constant.BLOCKVALUES.PASSAGE.getValue() && animation == worldController.getGhostAnim() && transparent == false){
+			return true;
+		}	
 		return false;
 	}
 	

@@ -44,7 +44,7 @@ public class WorldController implements InputProcessor
 		// Create resources
 		assets = new Assets();
 		// Instantiate LevelMap
-		levelMap = new LevelMap();
+		levelMap = new LevelMap(this);
 		// Instantiate background 
 		background = new Background(levelMap);
 		// Instantiate character
@@ -55,7 +55,7 @@ public class WorldController implements InputProcessor
 		treasureSites = new TreasureRegister(levelMap, assets.getTreasureImages());
 		// make a bullet Register
 		// Instantiate MonsterRegister
-		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim(), assets.getBatAnim(), assets.getSnakeAnim());
+		monsterRegister = new MonsterRegister(this, levelMap, assets.getMummyAnim(), assets.getBatAnim(), assets.getSnakeAnim(), assets.getGhostAnim());
 		bulletreg = new BulletRegister(this, levelMap, monsterRegister, assets.getBulletAnim());
 		// Instantiate DoorRegister
 		doorSites = new DoorRegister(levelMap, assets.getDoorClosed(), assets.getOpeningDoor());
@@ -150,8 +150,8 @@ public class WorldController implements InputProcessor
 	
 	public void characterCaught()
 	{
-		charHit = true;
-		character.isHit();
+		/*charHit = true;
+		character.isHit();*/
 	}
 
 	private void handleAccelerometer() {
@@ -247,6 +247,11 @@ public class WorldController implements InputProcessor
 	public Rectangle getCharacterCollisionBounds()
 	{
 		return character.getCollisionBounds();
+	}
+	
+	public Animation[] getGhostAnim()
+	{
+		return assets.getGhostAnim();
 	}
 	
 	public Rectangle getCharacterBounds()
