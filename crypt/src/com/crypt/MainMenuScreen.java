@@ -82,8 +82,6 @@ public class MainMenuScreen implements Screen
 		float proportion = (SCREEN_HEIGHT / height);
 		float screenWidth = width * proportion;
 		float screenHeight = SCREEN_HEIGHT;
-		//stage.setViewport(screenWidth, screenHeight, false);
-		//camera.setToOrtho(false, screenWidth, screenHeight);
 		
 		if (stage == null) stage = new Stage(screenWidth, screenHeight, true);
 		stage.clear();
@@ -197,7 +195,7 @@ public class MainMenuScreen implements Screen
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button)
 			{
 				buttonClick.play();
-				//game.setScreen(new LevelScreen(game));
+				game.setScreen(new LevelSelectionScreen(game));
 			}
 		});
 		

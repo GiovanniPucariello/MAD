@@ -19,6 +19,9 @@ public class Constant
 	// Number of block used in map
 	public final static int NUM_MAP_BLOCKS = 12;
 	
+	// Starting level set by the use
+	public static int STARTING_LEVEL = 1;
+	
 	// Game speed factor
 	public static float GAME_SPEED;
 	
@@ -56,6 +59,11 @@ public class Constant
 			if (token.hasMoreTokens()) {
 				CHAR_CONTROL = Integer.valueOf(token.nextToken());
 			}
+		}
+		file = Gdx.files.local("LevelSelected.csv");
+		if (Gdx.files.local("LevelSelected.csv").exists()) {
+			String line = file.readString();
+			if (line !="") STARTING_LEVEL = Integer.valueOf(line);
 		}
 	}
 	

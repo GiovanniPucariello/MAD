@@ -1,0 +1,75 @@
+
+LevelOptionUI.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+LevelNumbers
+  rotate: false
+  xy: 1, 1
+  size: 48, 939
+  orig: 48, 939
+  offset: 0, 0
+  index: -1
+DoneDown
+  rotate: false
+  xy: 51, 819
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+DoneUp
+  rotate: false
+  xy: 51, 696
+  size: 230, 121
+  orig: 230, 121
+  offset: 0, 0
+  index: -1
+LevelSelection
+  rotate: false
+  xy: 51, 628
+  size: 278, 66
+  orig: 278, 66
+  offset: 0, 0
+  index: -1
+LessDown
+  rotate: false
+  xy: 283, 875
+  size: 105, 65
+  orig: 105, 65
+  offset: 0, 0
+  index: -1
+LessGrayed
+  rotate: false
+  xy: 51, 561
+  size: 105, 65
+  orig: 105, 65
+  offset: 0, 0
+  index: -1
+LessUp
+  rotate: false
+  xy: 283, 808
+  size: 105, 65
+  orig: 105, 65
+  offset: 0, 0
+  index: -1
+MoreDown
+  rotate: false
+  xy: 390, 875
+  size: 105, 65
+  orig: 105, 65
+  offset: 0, 0
+  index: -1
+MoreGrayed
+  rotate: false
+  xy: 51, 494
+  size: 105, 65
+  orig: 105, 65
+  offset: 0, 0
+  index: -1
+MoreUp
+  rotate: false
+  xy: 158, 561
+  size: 105, 65
+  orig: 105, 65
+  offset: 0, 0
+  index: -1

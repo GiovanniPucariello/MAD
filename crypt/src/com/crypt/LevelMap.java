@@ -589,4 +589,8 @@ public class LevelMap
 		}
 		return false;
 	}
+	
+	public int getNumberLevels() {
+		return numberLevels;
+	}
 }

@@ -1,9 +1,12 @@
 package com.crypt;
 
+import java.util.StringTokenizer;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -41,6 +44,8 @@ public class WorldController implements InputProcessor
 	
 	public WorldController() 
 	{
+		// load game options
+		Constant.loadGameOptions();
 		// Create resources
 		assets = new Assets();
 		// Instantiate LevelMap
@@ -63,7 +68,9 @@ public class WorldController implements InputProcessor
 		// Instantiate spawnSites
 		spawnSiteReg = new SpawnSiteReg(levelMap, assets.getSpawnSiteClouds(), monsterRegister);
 		// Setup input detection to this class
-		Gdx.input.setInputProcessor(this);	
+		Gdx.input.setInputProcessor(this);
+		currentlevel = Constant.STARTING_LEVEL;
+		levelMap.setLevel(currentlevel);
 	}
 	
 	public void init() 
@@ -134,8 +141,9 @@ public class WorldController implements InputProcessor
 				else
 				{
 					// change level
+					savelevelsAttained();
 					timer = 0;
-					levelMap.setLevel(currentlevel++);
+					levelMap.setLevel(++currentlevel);
 					character.init();
 					treasureSites.init();
 					keyRegister.init();
@@ -423,5 +431,43 @@ public class WorldController implements InputProcessor
 		} else {
 			character.stopVerticalMove();
 		}	
+	}
+	
+	private void savelevelsAttained()
+	{
+		boolean[] levels = new boolean[20];
+		FileHandle file = Gdx.files.local("LevelCompleted.csv");
+		if (Gdx.files.local("LevelCompleted.csv").exists()) {
+			String line = file.readString();
+			StringTokenizer token = new StringTokenizer(line, ",");
+			
+			int i = 0;
+			while(token.hasMoreTokens() && i < 50)
+			{
+				levels[i] = Boolean.valueOf(token.nextToken());
+				i++;
+			}
+									
+			if(currentlevel < i && levels[currentlevel+1] == false) {
+				updateLevelsCompleted();
+			}
+		}
+		else {
+			updateLevelsCompleted();
+		}
+	}
+	
+	private void updateLevelsCompleted()
+	{
+		Gdx.files.local("LevelCompleted.csv").delete();		 
+		FileHandle file = Gdx.files.local("LevelCompleted.csv");
+		String line = "";
+		for(int i = 0; i < currentlevel+2; i++) {
+			line += Boolean.toString(true) + ",";
+		}
+		for(int i = (currentlevel + 2); i < levelMap.getNumberLevels()+1; i++) {
+			line += Boolean.toString(false) + ",";
+		}
+		file.writeString(line, false);
 	}
 }

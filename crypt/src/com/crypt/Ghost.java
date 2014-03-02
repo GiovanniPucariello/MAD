@@ -103,8 +103,6 @@ public class Ghost extends Entity
 				//stops guarding
 				if (guardTimer > guardInterval)
 				{
-					System.out.println("Stops guarding.");
-					
 					guarding = false;
 					guardTimer = 0f;
 					velocity.x = randomGenerator.nextInt(3)-1;
@@ -120,8 +118,6 @@ public class Ghost extends Entity
 					{
 						if (!collided(monsters) && inPassageWay())
 						{
-							System.out.println("Solid");
-		
 							transparent = false;
 							guarding = false;
 							transparentTimer = 0f;
@@ -139,7 +135,6 @@ public class Ghost extends Entity
 				
 				// check if collided with another creature
 				if (moveCollided(monsters)) {
-					if (transparent) System.out.println("changing direction");
 					if (movement.x != 0) {
 						// inverse direction
 						velocity.x *= -1;
@@ -163,22 +158,16 @@ public class Ghost extends Entity
 	
 	void changeMode(Array<Entity> monsters) 
 	{	
-		System.out.println("changeMode()");
-		
 		if(!transparent)
 		{
 			if (randomGenerator.nextInt(4) == 1)
 			{
-				System.out.println("Transparent");
-				
 				transparent = true;
 			}
 			else if(randomGenerator.nextInt(7) == 1)
 			{
 				if(!collided(monsters) && inPassageWay())
 				{
-					System.out.println("Guarding.");
-					
 					guarding = true;
 				}
 			}
