@@ -44,7 +44,6 @@ public class Mummy extends Entity
 		
 		if(characterBounds.x < bounds.x)
 		{
-			//System.out.println(blockX + ", " + blockY + " & " + charBlockX + ", " + charBlockY);
 			for(int i=0; i<2; i++)
 			{
 				blockX--;
@@ -53,7 +52,6 @@ public class Mummy extends Entity
 				{
 					if(blockX == charBlockX && blockY == charBlockY)
 					{
-						System.out.println("LEFT");
 						velocity.x = -1;
 						velocity.y = 0;
 						break;
@@ -89,7 +87,6 @@ public class Mummy extends Entity
 				{
 					if(blockX == charBlockX && blockY == charBlockY)
 					{
-						System.out.println("UP");
 						velocity.y = 1;
 						velocity.x = 0;
 						break;
@@ -125,7 +122,6 @@ public class Mummy extends Entity
 				{
 					if(blockX == charBlockX && blockY == charBlockY)
 					{
-						System.out.println("RIGHT");
 						velocity.x = 1;
 						velocity.y = 0;
 						break;
@@ -147,7 +143,6 @@ public class Mummy extends Entity
 
 		if(characterBounds.y < bounds.y)
 		{
-			
 			charBlockX = (int) (characterBounds.x / Constant.BLOCK_SIZE);
 			charBlockY = (int) (characterBounds.y / Constant.BLOCK_SIZE);
 		
@@ -162,7 +157,6 @@ public class Mummy extends Entity
 				{
 					if(blockX == charBlockX && blockY == charBlockY)
 					{
-						System.out.println("DOWN");
 						velocity.y = -1;
 						velocity.x = 0;
 						break;

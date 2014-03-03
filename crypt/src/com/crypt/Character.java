@@ -28,7 +28,6 @@ public class Character
 	private Vector2 movement;
 	
 	// Object references
-	private WorldController world;
 	private LevelMap levelMap;
 	
 	// boundary of character
@@ -74,9 +73,8 @@ public class Character
 	// state information
 	private Array<Key> collectedKeys = new Array<Key>();
 	
-	Character(WorldController world, LevelMap levelMap, Animation[] animation, Animation[] teleport)
+	Character(LevelMap levelMap, Animation[] animation, Animation[] teleport)
 	{
-		this.world = world;
 		this.levelMap = levelMap;
 		
 		this.animation = animation;
