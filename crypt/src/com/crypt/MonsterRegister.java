@@ -110,6 +110,7 @@ public class MonsterRegister
 			if (monster.dead == true)
 			{
 				iter.remove();
+				StatusBar.updatePoints(10);
 			}
 			else
 			{
