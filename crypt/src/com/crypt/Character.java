@@ -28,7 +28,6 @@ public class Character
 	private Vector2 movement;
 	
 	// Object references
-	private WorldController world;
 	private LevelMap levelMap;
 	
 	// boundary of character
@@ -41,14 +40,11 @@ public class Character
 	// players state
 	private boolean hit = false;
 	private boolean isDead = false;
-	private boolean livesLeft = true;
 	private boolean transporting = false;
 	private boolean appearing = false;
 	private boolean appeared = false;
 	private float appearingTime = 0f;
 	private float stoodtimer = 0;
-	static int lives = 3;
-	static int deaths = 0;
 	
 	// frame to render
 	private TextureRegion currentFrame;
@@ -77,9 +73,8 @@ public class Character
 	// state information
 	private Array<Key> collectedKeys = new Array<Key>();
 	
-	Character(WorldController world, LevelMap levelMap, Animation[] animation, Animation[] teleport)
+	Character(LevelMap levelMap, Animation[] animation, Animation[] teleport)
 	{
-		this.world = world;
 		this.levelMap = levelMap;
 		
 		this.animation = animation;
@@ -328,7 +323,7 @@ public class Character
 					stoodtimer += Gdx.graphics.getDeltaTime();
 					
 					// check if stood for over 1.5 seconds
-					if (stoodtimer > 1.5 && world.paused == false)
+					if (stoodtimer > 1.5)
 					{
 						// reset timer and select a stood position
 						stoodtimer = 0;
@@ -388,16 +383,5 @@ public class Character
 			
 		}
 		return false;
-	}
-	
-	public boolean livesleft() {
-		deaths++;
-		if(deaths >= lives)
-		{
-			livesLeft = false;
-		}
-		//System.out.println("Deaths: " + deaths);
-		//System.out.println("Points: " + score);
-		return livesLeft;
 	}
 }

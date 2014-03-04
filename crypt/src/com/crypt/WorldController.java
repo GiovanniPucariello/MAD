@@ -15,18 +15,12 @@ import com.badlogic.gdx.utils.Array;
 
 public class WorldController implements InputProcessor
 {
-	
-	private Crypt game; //used for switching screen
-	
 	// Screen viewPort
 	private Rectangle viewPort = new Rectangle(0,0,0,0);
 	
 	// world objects
 	public Background background;
 	private LevelMap levelMap;
-	public StatusBar statusBar;
-	public PauseMenu pauseMenu;
-	public SummaryMenu summaryMenu;
 	private Assets assets;
 	public Character character;
 	public TreasureRegister treasureSites;
@@ -44,18 +38,12 @@ public class WorldController implements InputProcessor
 	
 	private float timer = 0f;
 	
-	boolean paused = false;
-	boolean end = false;
-	boolean levelWon = false;
-	
 	// unprojected screen touch position
 	private Vector3 touchPoint = new Vector3();
 	private Vector2 direction = new Vector2();
 	
-	public WorldController(Crypt game) 
+	public WorldController() 
 	{
-		// set game reference
-		this.game = game;
 		// load game options
 		Constant.loadGameOptions();
 		// Create resources
@@ -64,14 +52,8 @@ public class WorldController implements InputProcessor
 		levelMap = new LevelMap(this);
 		// Instantiate background 
 		background = new Background(levelMap);
-		// Instantiate StatusBar
-		statusBar = new StatusBar(assets.getLivesIcon(), assets.getStatusBar());
-		// Instantiate PauseMenu
-		pauseMenu = new PauseMenu();
-		// Instantiate SummaryMenu
-		summaryMenu = new SummaryMenu();
 		// Instantiate character
-		character = new Character(this, levelMap, assets.getCharAnim(), assets.getCharTeleport());
+		character = new Character(levelMap, assets.getCharAnim(), assets.getCharTeleport());
 		// instantiate KeyRegister
 		keyRegister = new KeyRegister(levelMap, assets.getKeyImages());
 		// instantiate TreasureRegister
@@ -94,25 +76,17 @@ public class WorldController implements InputProcessor
 	public void init() 
 	{
 		// initial objects for this level
-		statusBar.init();
 		character.init();
 		treasureSites.init();
 		keyRegister.init();
 		doorSites.init();
 		charHit = false;
-		end = false;
-		levelWon = false;
 	}
 	
 	public void update (float deltaTime) 
 	{
 		if (character.isLevelfinished() == false && charHit == false) 
 		{
-			if(!statusBar.timeLeft())
-			{
-				worldEnd(false);
-			}
-			
 			// check for Accelerometer
 			handleAccelerometer();
 			
@@ -147,9 +121,6 @@ public class WorldController implements InputProcessor
 				if (character.isDead())
 				{
 					// **************************** need to decrement lives here
-					//character.updatelives();
-					if(character.livesleft())
-					{
 					// reset character
 					charHit = false;
 					character.init();
@@ -157,11 +128,6 @@ public class WorldController implements InputProcessor
 					monsterRegister.init();
 					bulletreg.init();
 					spawnSiteReg.init();
-					}
-					else
-					{
-						worldEnd(false);
-					}
 				}
 			}
 			// character finished the level
@@ -176,18 +142,15 @@ public class WorldController implements InputProcessor
 				{
 					// change level
 					savelevelsAttained();
-					worldEnd(true);
-					
-//					timer = 0;
-//					levelMap.setLevel(++currentlevel);
-//					statusBar.init();
-//					character.init();
-//					treasureSites.init();
-//					keyRegister.init();
-//					doorSites.init();	
-//					monsterRegister.init();
-//					bulletreg.init();
-//					spawnSiteReg.init();
+					timer = 0;
+					levelMap.setLevel(++currentlevel);
+					character.init();
+					treasureSites.init();
+					keyRegister.init();
+					doorSites.init();	
+					monsterRegister.init();
+					bulletreg.init();
+					spawnSiteReg.init();
 				}				
 			}
 		}
@@ -195,8 +158,8 @@ public class WorldController implements InputProcessor
 	
 	public void characterCaught()
 	{
-		charHit = true;
-		character.isHit();
+		/*charHit = true;
+		character.isHit();*/
 	}
 
 	private void handleAccelerometer() {
@@ -337,15 +300,6 @@ public class WorldController implements InputProcessor
 		case Keys.W:
 			addbullet(Gdx.graphics.getWidth() /2, 0);
 			break;
-		case Keys.SPACE:
-			pause();
-			break;
-		case Keys.BACKSPACE:
-			resume();
-			break;
-		case Keys.ESCAPE:
-			worldEnd(false);
-			break;
 		}
 		return true;
 	}
@@ -380,47 +334,11 @@ public class WorldController implements InputProcessor
 	{
 		// check if the touch is on the joystick pad or a fire touch
 		touchPoint = renderer.unprojected(screenX, screenY);
-		if (Constant.CHAR_CONTROL == Constant.JOYSTICK && renderer.touchPad.contains(touchPoint.x, touchPoint.y)) 
-		{
+		if (Constant.CHAR_CONTROL == Constant.JOYSTICK && renderer.touchPad.contains(touchPoint.x, touchPoint.y)) {
 			touchpadMovement(touchPoint);
-		}
-		else if(renderer.pauseButtonArea.contains(touchPoint.x, touchPoint.y))
-		{
-			pause();
-		}
-		else
-		{
-			if(paused == false)
-			{
-				addbullet(screenX, screenY);
-			}
-		}
-		if(paused == true)
-		{
-			//System.out.println("paused = " + paused);
-			//System.out.println("resume Button area = " + pauseMenu.resumeButtonArea);
-			if (end == true)
-			{
-				if(renderer.endButtonArea.contains(touchPoint.x, touchPoint.y))
-				{
-					//System.out.println("QUIT!");
-					game.setScreen(new MainMenuScreen(game)); //return to Menu.
-				}
-			}
-			else
-			{
-				if(renderer.resumeButtonArea.contains(touchPoint.x, touchPoint.y))
-				{
-					//System.out.println("RESUME!");
-					resume();
-				}
-				if(renderer.quitButtonArea.contains(touchPoint.x, touchPoint.y))
-				{
-					//System.out.println("Game Finished");
-					resume();
-					worldEnd(false);
-				}
-			}
+			
+		} else {
+			addbullet(screenX, screenY);
 		}
 		return true;
 	}
@@ -551,27 +469,5 @@ public class WorldController implements InputProcessor
 			line += Boolean.toString(false) + ",";
 		}
 		file.writeString(line, false);
-	}
-	
-	void worldEnd(boolean won)
-	{
-		//System.out.println("GAME OVER!");
-		end = true;
-		levelWon = won;
-		pause();
-		//System.out.print("points: " + Character.displayPoints());
-		//game.setScreen(new MainMenuScreen(game)); //return to Menu.
-	}
-	
-	void pause()
-	{
-		paused = true;
-		game.pause();
-	}
-	
-	void resume()
-	{
-		paused = false;
-		game.resume();
 	}
 }

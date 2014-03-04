@@ -19,9 +19,6 @@ public class Assets
 	private EntityAnimations spawnSiteClouds = new EntityAnimations("data/SpawnSprite.png",0,0.1f, Constant.BLOCK_SIZE, Constant.BLOCK_SIZE);
 	
 	private TextureRegion closedDoor = new TextureRegion(new Texture(Gdx.files.internal("data/door.png")));
-	//private TextureRegion livesIcon = new TextureRegion(new Texture(Gdx.files.internal("data/Lives.png")));//------------------------------------------------
-	private TextureRegion livesIcon = new TextureRegion(new Texture(Gdx.files.internal("data/Lives(old).png")));//------------------------------------------------
-	private TextureRegion statusBarBackground = new TextureRegion(new Texture(Gdx.files.internal("data/StatusBar.png")));
 	private TextureRegion[] treasure = new TextureRegion[10];
 	private TextureRegion[] key = new TextureRegion[10];
 	
@@ -99,16 +96,6 @@ public class Assets
 	public TextureRegion getDoorClosed()
 	{
 		return closedDoor;
-	}
-	
-	public TextureRegion getLivesIcon() 
-	{
-		return livesIcon;
-	}
-	
-	public TextureRegion getStatusBar()
-	{
-		return statusBarBackground;
 	}
 
 }

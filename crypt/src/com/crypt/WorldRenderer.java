@@ -1,7 +1,6 @@
 package com.crypt;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -39,18 +38,6 @@ public class WorldRenderer implements Disposable {
 	public Circle touchPadLimit = new Circle();
 	private Vector2 joystickMovement = new Vector2();
 	public Vector2 touchPadCentre = new Vector2(0,0);
-	
-	//Pause Button Image
-		private TextureRegion pauseButton,resumeButton,quitButton, endButton;
-		private float pauseButtonSize = 64;
-		private float buttonWidth = 200;
-		private float buttonHeight = 64;
-		
-		//Pause Area
-		public Rectangle pauseButtonArea = new Rectangle();
-		public Rectangle resumeButtonArea = new Rectangle();
-		public Rectangle quitButtonArea = new Rectangle();
-		public Rectangle endButtonArea = new Rectangle();
 		
 	public WorldRenderer (WorldController world) 
 	{
@@ -67,12 +54,6 @@ public class WorldRenderer implements Disposable {
 		
 		// setup Joystick ready for possible use
 		joystick = new TextureRegion(new Texture(Gdx.files.internal("data/TouchPad.png")));
-		
-		//setup Pause Button Texture
-		pauseButton = new TextureRegion(new Texture(Gdx.files.internal("data/PauseButton.png")));
-		resumeButton = new TextureRegion(new Texture(Gdx.files.internal("data/resumeButton.png")));
-		endButton = new  TextureRegion(new Texture(Gdx.files.internal("data/quitButton.png")));
-		quitButton = new TextureRegion(new Texture(Gdx.files.internal("data/quitButton.png")));
 	}
 	
 	public void render()
@@ -143,37 +124,12 @@ public class WorldRenderer implements Disposable {
 			world.monsterRegister.draw(batch);
 			world.bulletreg.draw(batch);
 			world.spawnSiteReg.draw(batch, deltatime);
-			drawPauseButton();
 			
 			//******* render touch pad last if turned on *************
 			if (Constant.CHAR_CONTROL == Constant.JOYSTICK)
 			{
 				//batch.draw(joystick, viewPort.x, viewPort.y, joystickSize, joystickSize);
 				batch.draw(joystick, touchPad.x-touchPad.radius, touchPad.y-touchPad.radius, joystickSize, joystickSize);
-			}
-			
-			world.statusBar.draw(batch, viewPort);		//draws infomation bar and relevant info in game.
-			if(world.paused == true)
-			{
-				Color c = batch.getColor();
-				batch.setColor(c.r, c.g, c.b, 1);
-				
-				if(world.end == true)
-				{
-					world.summaryMenu.draw(batch, viewPort, world.levelWon);
-					batch.draw(endButton, endButtonArea.x, endButtonArea.y, buttonWidth, buttonHeight);
-				}
-				else
-				{
-					//render Pause Menu and options.
-					
-					world.pauseMenu.draw(batch, viewPort);
-					batch.draw(resumeButton, resumeButtonArea.x, resumeButtonArea.y, buttonWidth, buttonHeight);
-					batch.draw(quitButton, quitButtonArea.x, quitButtonArea.y, buttonWidth, buttonHeight);
-					
-				}
-				
-				batch.setColor(c.r, c.g, c.b, 0.5f);
 			}
 		batch.end();
 	}
@@ -193,10 +149,6 @@ public class WorldRenderer implements Disposable {
 		joystickSize = ((float)Constant.NUM_ROWS / 12) * 192;
 		touchPad = new Circle(joystickSize / 2, viewPort.y + joystickSize / 2, joystickSize/2);
 		touchPadLimit = new Circle(joystickSize / 2, viewPort.y + joystickSize / 2, joystickSize/2+joystickSize/6);
-		pauseButtonArea = new Rectangle(viewPort.width - pauseButtonSize/2, viewPort.y - pauseButtonSize/2,pauseButtonSize, pauseButtonSize);
-		resumeButtonArea = new Rectangle((viewPort.width/2) - (buttonWidth/2), viewPort.y + buttonHeight + buttonHeight + buttonHeight,buttonWidth, buttonHeight);
-		quitButtonArea = new Rectangle((viewPort.width/2) - (buttonWidth/2), viewPort.y + buttonHeight + buttonHeight,buttonWidth, buttonHeight);
-		endButtonArea = new Rectangle((viewPort.width/2) - (buttonWidth/2), viewPort.y + buttonHeight + buttonHeight,buttonWidth, buttonHeight);
 	}
 	
 	@Override public void dispose()
@@ -284,16 +236,6 @@ public class WorldRenderer implements Disposable {
 		touchPadLimit.x = touchPad.x;
 		touchPadLimit.y = touchPad.y;
 		
-		// update the position of the pauseButton
-		pauseButtonArea.y = viewPort.y + (viewPort.height-64);
-		pauseButtonArea.x = viewPort.width + viewPort.width - pauseButtonSize;
-		resumeButtonArea.y = viewPort.y + buttonHeight + buttonHeight + buttonHeight;
-		resumeButtonArea.x = viewPort.x + (viewPort.width/2) - buttonWidth/2;
-		quitButtonArea.y = viewPort.y + buttonHeight + buttonHeight;
-		quitButtonArea.x = viewPort.x + (viewPort.width/2) - buttonWidth/2;
-		endButtonArea.y = viewPort.y + buttonHeight;
-		endButtonArea.x = viewPort.x + (viewPort.width/2) - buttonWidth/2;
-		
 		return viewPort;
 	}
 	
@@ -309,11 +251,5 @@ public class WorldRenderer implements Disposable {
 		joystickMovement.x = touchPad.x - x;
 		joystickMovement.y = touchPad.y - y;
 		return joystickMovement;		
-	}
-	public void drawPauseButton()
-	{
-		pauseButtonArea.y = viewPort.y + (viewPort.height-64);
-		pauseButtonArea.x = viewPort.x + viewPort.width - pauseButtonSize;
-		batch.draw(pauseButton, pauseButtonArea.x, pauseButtonArea.y, pauseButtonSize, pauseButtonSize);
 	}
 }

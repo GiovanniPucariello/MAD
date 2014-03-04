@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.crypt.Constant;
 import com.crypt.Crypt;
-import com.crypt.StatusBar;
 import com.crypt.WorldController;
 import com.crypt.WorldRenderer;
 
@@ -27,7 +26,7 @@ public class GameScreen implements Screen{
 		Constant.loadGameOptions();
 		
 		// Initialise controller and renderer
-		world = new WorldController(game);
+		world = new WorldController();
 		worldRenderer = new WorldRenderer(world);
 		world.setRender(worldRenderer);
 		world.init();
@@ -39,12 +38,9 @@ public class GameScreen implements Screen{
 		if (!pause)
 		{
 			// Update game world by the time that has passed since last rendered frame.
-			Gdx.input.setInputProcessor(world);
 			world.update(Gdx.graphics.getDeltaTime());
-				
-		}
-		
-		worldRenderer.render();			//ALWAYS RENDER IMAGE.
+			worldRenderer.render();	
+		}		
 	}
 
 	@Override
@@ -66,7 +62,6 @@ public class GameScreen implements Screen{
 	@Override
 	public void pause() 
 	{
-		StatusBar.updatePoints(0);
 		pause = true;
 	}
 
