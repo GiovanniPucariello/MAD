@@ -291,7 +291,7 @@ public class LevelMap
 	
 	public int cellProperties(int x, int y)
 	{
-		if (x < 0 || x>mapLength[thisLevel]|| y<0 || y>mapHeight[thisLevel])
+		if (x < 0 || x>mapLength[thisLevel]-1 || y<0 || y>mapHeight[thisLevel]-1 )
 				return 0;
 		// get block details
 		int block = level.get(thisLevel).get(x).get(y);

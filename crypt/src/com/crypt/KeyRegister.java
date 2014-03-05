@@ -77,7 +77,7 @@ public class KeyRegister
 					if (blockProperty >= Constant.KEY_TYPE.KEY1.getValue() && blockProperty <= Constant.KEY_TYPE.KEY10.getValue())
 					{
 						Vector2 position = new Vector2(x * Constant.BLOCK_SIZE, y * Constant.BLOCK_SIZE);
-						Rectangle bounds = new Rectangle(position.x -3, position.y - Constant.BLOCK_SIZE - 3, Constant.BLOCK_SIZE + 6, - Constant.BLOCK_SIZE - 6);
+						Rectangle bounds = new Rectangle(position.x -3, position.y - Constant.BLOCK_SIZE - 3, Constant.BLOCK_SIZE + 6, Constant.BLOCK_SIZE + 6);
 						keySites.add(new Key(position, keyImages, blockProperty-11, getKeyValue(blockProperty), bounds));
 					}
 				}

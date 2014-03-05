@@ -29,10 +29,18 @@ public class Ghost extends Entity
 	private int down = 1;
 	private int right = 2; 
 	private int left = 3;
+	private int fadeoutUp = 4;
+	private int fadeoutDown = 5;
+	private int fadeoutright = 6; 
+	private int fadeoutleft = 7;
 	private int transparentUp = 8;
 	private int transparentDown = 9;
 	private int transparentRight = 10; 
 	private int transparentLeft = 11;
+	private int fadeinUp = 12;
+	private int fadeinDown = 13;
+	private int fadeinRight = 14; 
+	private int fadeinLeft = 15;
 	private int guard = 17;
 	private int dying = 5; // no animation currently available
 	
@@ -176,18 +184,22 @@ public class Ghost extends Entity
 		{
 			if (bounds.x < characterPosition.x)
 			{
+				//System.out.println("Moving right");
 				velocity.x = 1;
 			}
 			else if (bounds.x > characterPosition.x)
 			{
+				//System.out.println("Moving left");
 				velocity.x = -1;
 			}
 			if (bounds.y < characterPosition.y)
 			{
+				//System.out.println("Moving up");
 				velocity.y = 1;
 			}
 			else if (bounds.y > characterPosition.y)
 			{
+				//System.out.println("Moving down");
 				velocity.y = -1;
 			}
 		}

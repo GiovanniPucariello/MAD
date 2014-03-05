@@ -53,7 +53,7 @@ public class WorldController implements InputProcessor
 		// Instantiate background 
 		background = new Background(levelMap);
 		// Instantiate character
-		character = new Character(levelMap, assets.getCharAnim(), assets.getCharTeleport());
+		character = new Character(this, levelMap, assets.getCharAnim(), assets.getCharTeleport());
 		// instantiate KeyRegister
 		keyRegister = new KeyRegister(levelMap, assets.getKeyImages());
 		// instantiate TreasureRegister
@@ -158,8 +158,8 @@ public class WorldController implements InputProcessor
 	
 	public void characterCaught()
 	{
-		/*charHit = true;
-		character.isHit();*/
+		charHit = true;
+		character.isHit();
 	}
 
 	private void handleAccelerometer() {
