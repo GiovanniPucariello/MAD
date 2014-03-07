@@ -80,6 +80,7 @@ public class WorldController implements InputProcessor
 		treasureSites.init();
 		keyRegister.init();
 		doorSites.init();
+		spawnSiteReg.init();
 		charHit = false;
 	}
 	
