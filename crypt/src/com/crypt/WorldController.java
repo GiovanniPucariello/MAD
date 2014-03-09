@@ -193,56 +193,28 @@ public class WorldController implements InputProcessor
 	 * @param x bottom left of character position
 	 * @param y bottom left of character position
 	 */
-	public void addbullet(float x , float y)
+	public void addbullet(Fire fire)
 	{
-		int centerx;
-		
-		if(Constant.CHAR_CONTROL == Constant.JOYSTICK)
-		{
-			centerx = Gdx.graphics.getWidth() - Gdx.graphics.getWidth() / 7;
-		}
-		else
-		{
-			centerx = Gdx.graphics.getWidth() /2;
-		}
-		int height = Gdx.graphics.getHeight();
-		int centreThirdFrom = height/3;
-		int centreThirdTo = height /3 * 2;
-		
 		// Call bulletRegister class from here and add bullet
 		Vector2 bulletStart = getCharacterPosition();
 		Vector2 bulletDirection = new Vector2(0,0);
 
-		if (x > centerx && y > centreThirdFrom && y < centreThirdTo)
+		if (fire == Fire.right)
 		{
 				bulletDirection.x = 1;
 				bulletreg.add(bulletDirection,bulletStart);
-		} else if (x < centerx && y > centreThirdFrom && y < centreThirdTo)
+		} else if (fire == Fire.left)
 		{
 				bulletDirection.x = -1;
 				bulletreg.add(bulletDirection,bulletStart);
 
-		} else if (y > centreThirdFrom)
+		} else if (fire == Fire.down)
 		{
 			bulletDirection.y = -1;
 			bulletreg.add(bulletDirection,bulletStart);
-		} else if (y < centreThirdTo)
+		} else if (fire == Fire.up)
 		{
 			bulletDirection.y = 1;
-			bulletreg.add(bulletDirection,bulletStart);
-		} else if(y==x)
-		{
-			bulletDirection.x = 1;
-			bulletDirection.y = 0;
-			bulletreg.add(bulletDirection,bulletStart);
-			bulletDirection.x = -1;
-			bulletDirection.y = 0;
-			bulletreg.add(bulletDirection,bulletStart);
-			bulletDirection.x = 0;
-			bulletDirection.y = 1;
-			bulletreg.add(bulletDirection,bulletStart);
-			bulletDirection.x = 0;
-			bulletDirection.y = -1;
 			bulletreg.add(bulletDirection,bulletStart);
 		}
 	}
@@ -290,16 +262,16 @@ public class WorldController implements InputProcessor
 			character.moveDown();
 			break;
 		case Keys.D:
-			addbullet(Gdx.graphics.getWidth() /2 +100, Gdx.graphics.getHeight() /2);
+			addbullet(Fire.right);
 			break;
 		case Keys.A:
-			addbullet(Gdx.graphics.getWidth() /2 -100, Gdx.graphics.getHeight() /2);
+			addbullet(Fire.left);
 			break;
 		case Keys.S:
-			addbullet(Gdx.graphics.getWidth() /2, Gdx.graphics.getHeight());
+			addbullet(Fire.down);
 			break;
 		case Keys.W:
-			addbullet(Gdx.graphics.getWidth() /2, 0);
+			addbullet(Fire.up);
 			break;
 		}
 		return true;
@@ -339,7 +311,10 @@ public class WorldController implements InputProcessor
 			touchpadMovement(touchPoint);
 			
 		} else {
-			addbullet(screenX, screenY);
+			if (renderer.fireButtonUp.contains(touchPoint.x, touchPoint.y)) addbullet(Fire.up);
+			if (renderer.fireButtonDown.contains(touchPoint.x, touchPoint.y)) addbullet(Fire.down);
+			if (renderer.fireButtonLeft.contains(touchPoint.x, touchPoint.y)) addbullet(Fire.left);
+			if (renderer.fireButtonRight.contains(touchPoint.x, touchPoint.y)) addbullet(Fire.right);
 		}
 		return true;
 	}

@@ -38,6 +38,16 @@ public class WorldRenderer implements Disposable {
 	public Circle touchPadLimit = new Circle();
 	private Vector2 joystickMovement = new Vector2();
 	public Vector2 touchPadCentre = new Vector2(0,0);
+	
+	// firebuttons
+	private TextureRegion fireButtons;
+	public float fireButtonSize = 384;
+	private float firebuttonX = 0;
+	private float firebuttonY = 0;
+	public Rectangle fireButtonUp = new Rectangle(0,0,0,0);
+	public Rectangle fireButtonLeft = new Rectangle(0,0,0,0);
+	public Rectangle fireButtonRight = new Rectangle(0,0,0,0);
+	public Rectangle fireButtonDown = new Rectangle(0,0,0,0);
 		
 	public WorldRenderer (WorldController world) 
 	{
@@ -54,6 +64,8 @@ public class WorldRenderer implements Disposable {
 		
 		// setup Joystick ready for possible use
 		joystick = new TextureRegion(new Texture(Gdx.files.internal("data/TouchPad.png")));
+		
+		fireButtons = new TextureRegion(new Texture(Gdx.files.internal("data/FireButtons.png")));
 	}
 	
 	public void render()
@@ -125,10 +137,11 @@ public class WorldRenderer implements Disposable {
 			world.bulletreg.draw(batch);
 			world.spawnSiteReg.draw(batch, deltatime);
 			
+			batch.draw(fireButtons, firebuttonX, firebuttonY, fireButtonSize, fireButtonSize);
+			
 			//******* render touch pad last if turned on *************
 			if (Constant.CHAR_CONTROL == Constant.JOYSTICK)
 			{
-				//batch.draw(joystick, viewPort.x, viewPort.y, joystickSize, joystickSize);
 				batch.draw(joystick, touchPad.x-touchPad.radius, touchPad.y-touchPad.radius, joystickSize, joystickSize);
 			}
 		batch.end();
@@ -149,6 +162,18 @@ public class WorldRenderer implements Disposable {
 		joystickSize = ((float)Constant.NUM_ROWS / 12) * 192;
 		touchPad = new Circle(joystickSize / 2, viewPort.y + joystickSize / 2, joystickSize/2);
 		touchPadLimit = new Circle(joystickSize / 2, viewPort.y + joystickSize / 2, joystickSize/2+joystickSize/6);
+		
+		// Adjust the fire buttons image
+		fireButtonSize = ((float)Constant.NUM_ROWS / 12) * 384;
+		// Adjust the fire buttons size
+		fireButtonUp.width = ((float)Constant.NUM_ROWS / 12) * 185;
+		fireButtonUp.height = ((float)Constant.NUM_ROWS / 12) * 120;
+		fireButtonLeft.width = ((float)Constant.NUM_ROWS / 12) * 185;
+		fireButtonLeft.height = ((float)Constant.NUM_ROWS / 12) * 120;
+		fireButtonRight.width = ((float)Constant.NUM_ROWS / 12) * 185;
+		fireButtonRight.height = ((float)Constant.NUM_ROWS / 12) * 120;
+		fireButtonDown.width = ((float)Constant.NUM_ROWS / 12) * 185;
+		fireButtonDown.height = ((float)Constant.NUM_ROWS / 12) * 120;
 	}
 	
 	@Override public void dispose()
@@ -235,6 +260,22 @@ public class WorldRenderer implements Disposable {
 		touchPad.x = viewPort.x + joystickSize / 2 + touchPadCentre.x;
 		touchPadLimit.x = touchPad.x;
 		touchPadLimit.y = touchPad.y;
+		
+		// update the fire button image position
+		firebuttonX = viewPort.x + viewPort.width - fireButtonSize; 
+		firebuttonY = viewPort.y;
+		
+		// update fire button positions
+		float scale = ((float)Constant.NUM_ROWS / 12);
+		
+		fireButtonUp.x = firebuttonX + (scale * 99);
+		fireButtonUp.y = firebuttonY + (scale * 261);
+		fireButtonLeft.x = firebuttonX; 
+		fireButtonLeft.y = firebuttonY + (scale * 135);
+		fireButtonRight.x = firebuttonX + (scale * 192);;
+		fireButtonRight.y = firebuttonY + (scale * 135);
+		fireButtonDown.x = firebuttonX + (scale * 99);
+		fireButtonDown.y = firebuttonY + (scale * 7);
 		
 		return viewPort;
 	}
