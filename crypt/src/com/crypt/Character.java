@@ -41,11 +41,14 @@ public class Character
 	// players state
 	private boolean hit = false;
 	private boolean isDead = false;
+	private boolean livesLeft = true;
 	private boolean transporting = false;
 	private boolean appearing = false;
 	private boolean appeared = false;
 	private float appearingTime = 0f;
 	private float stoodtimer = 0;
+	static int lives = 3;
+	static int deaths = 0;
 	
 	// frame to render
 	private TextureRegion currentFrame;
@@ -325,7 +328,7 @@ public class Character
 					stoodtimer += Gdx.graphics.getDeltaTime();
 					
 					// check if stood for over 1.5 seconds
-					if (stoodtimer > 1.5)
+					if (stoodtimer > 1.5 && world.paused == false)
 					{
 						// reset timer and select a stood position
 						stoodtimer = 0;
@@ -385,5 +388,16 @@ public class Character
 			
 		}
 		return false;
+	}
+	
+	public boolean livesleft() {
+		deaths++;
+		if(deaths >= lives)
+		{
+			livesLeft = false;
+		}
+		//System.out.println("Deaths: " + deaths);
+		//System.out.println("Points: " + score);
+		return livesLeft;
 	}
 }

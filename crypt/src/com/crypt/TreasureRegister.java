@@ -113,7 +113,8 @@ public class TreasureRegister
 		if (points > 0)
 		{
 			collectsound.play();
-			System.out.println("Points "+ points);
+			StatusBar.updatePoints(points);
+			//System.out.println("Points "+ points);
 		}
 		return points;
 	}

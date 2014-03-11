@@ -32,7 +32,6 @@ public class SpawnSiteReg
 		{
 			// clear any old site infor
 			spawnSites.clear();
-			System.out.println("Spawn Sites cleared");
 			spawnSites = levelMap.getSpawnSites(animation, monsterReg);			
 		}
 		
