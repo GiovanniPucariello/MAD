@@ -99,7 +99,7 @@ public class PlayingOptionsScreen implements Screen
 		styleDoneBut.down = graphicSkin.getDrawable("doneDown");
 				
 		Button buttonDone = new Button(styleDoneBut);
-		buttonDone.setX(width);
+		buttonDone.setX(screenWidth / 2 + 400);
 		buttonDone.setY(20);
 		
 		buttonDone.addListener(new ChangeListener() {

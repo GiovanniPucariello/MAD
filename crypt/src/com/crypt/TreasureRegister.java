@@ -74,7 +74,7 @@ public class TreasureRegister
 					if (blockProperty > Constant.TREASURE_TYPE.EMRALD.getValue() && blockProperty < Constant.TREASURE_TYPE.GOLD.getValue())
 					{
 						Vector2 position = new Vector2(x * Constant.BLOCK_SIZE, y * Constant.BLOCK_SIZE);
-						Rectangle bounds = new Rectangle(position.x -3, position.y - Constant.BLOCK_SIZE - 3, Constant.BLOCK_SIZE + 6, - Constant.BLOCK_SIZE - 6);
+						Rectangle bounds = new Rectangle(position.x -3, position.y - Constant.BLOCK_SIZE - 3, Constant.BLOCK_SIZE + 6, Constant.BLOCK_SIZE + 6);
 						treasureSites.add(new Treasure(position, treasureImages, blockProperty-1, getPoints(blockProperty), bounds));
 					}
 				}

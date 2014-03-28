@@ -61,7 +61,7 @@ public class Treasure
 		// only draw if not collected
 		if (collected == false)
 		{
-			batch.draw(image[imageIndex], position.x, position.y);
+			batch.draw(image[imageIndex], position.x+3, position.y-3);
 		}
 	}
 }

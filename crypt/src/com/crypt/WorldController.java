@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Peripheral;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Rectangle;
@@ -47,13 +48,18 @@ public class WorldController implements InputProcessor
 	boolean paused = false;
 	boolean end = false;
 	boolean levelWon = false;
+	boolean userClickedOK = false;
 	
 	// unprojected screen touch position
 	private Vector3 touchPoint = new Vector3();
 	private Vector2 direction = new Vector2();
 	
+	private Sound buttonClick;
+	
 	public WorldController(Crypt game) 
 	{
+		buttonClick = Gdx.audio.newSound(Gdx.files.internal("data/buttonClick.mp3"));
+		
 		// set game reference
 		this.game = game;
 		// load game options
@@ -69,7 +75,7 @@ public class WorldController implements InputProcessor
 		// Instantiate PauseMenu
 		pauseMenu = new PauseMenu();
 		// Instantiate SummaryMenu
-		summaryMenu = new SummaryMenu();
+		summaryMenu = new SummaryMenu(this);
 		// Instantiate character
 		character = new Character(this, levelMap, assets.getCharAnim(), assets.getCharTeleport());
 		// instantiate KeyRegister
@@ -147,20 +153,20 @@ public class WorldController implements InputProcessor
 				character.update(deltaTime);
 				if (character.isDead())
 				{
-					// **************************** need to decrement lives here
-					//character.updatelives();
+					// Decrement lives here
 					if(character.livesleft())
 					{
-					// reset character
-					charHit = false;
-					character.init();
-					// reset monsters and bullets
-					monsterRegister.init();
-					bulletreg.init();
-					spawnSiteReg.init();
+						// reset character
+						charHit = false;
+						character.init();
+						// reset monsters and bullets
+						monsterRegister.init();
+						bulletreg.init();
+						spawnSiteReg.init();
 					}
 					else
 					{
+						// game over
 						worldEnd(false);
 					}
 				}
@@ -169,24 +175,14 @@ public class WorldController implements InputProcessor
 			else
 			{
 				// three second delay
-				if (timer < 3)
+				if (timer < 1.0)
 				{
 					timer += Gdx.graphics.getDeltaTime();
 				}
 				else
 				{
-					// change level
-					savelevelsAttained();
-					timer = 0;
-					levelMap.setLevel(++currentlevel);
-					character.init();
-					treasureSites.init();
-					keyRegister.init();
-					doorSites.init();	
-					monsterRegister.init();
-					bulletreg.init();
-					spawnSiteReg.init();
-					worldEnd(true);
+					levelWon = true;
+					pause();
 				}				
 			}
 		}
@@ -223,11 +219,6 @@ public class WorldController implements InputProcessor
 		}
 	}
 	
-	/**
-	 * 
-	 * @param x bottom left of character position
-	 * @param y bottom left of character position
-	 */
 	public void addbullet(Fire fire)
 	{
 		// Call bulletRegister class from here and add bullet
@@ -353,32 +344,52 @@ public class WorldController implements InputProcessor
 		touchPoint = renderer.unprojected(screenX, screenY);
 		if(paused == true)
 		{
-			//System.out.println("paused = " + paused);
-			//System.out.println("resume Button area = " + pauseMenu.resumeButtonArea);
-			if (end == true)
+			if (end == true || levelWon == true)
 			{
-				if(renderer.endButtonArea.contains(touchPoint.x, touchPoint.y))
+				if(summaryMenu.parchmentArea.contains(touchPoint.x, touchPoint.y))
 				{
-					//System.out.println("QUIT!");
-					game.setScreen(new MainMenuScreen(game)); //return to Menu.
+					if (end == true) {
+						// update the high scores
+						summaryMenu.updateHighScores();
+						summaryMenu.fireButtons = false;
+						game.setScreen(new MainMenuScreen(game)); //return to Menu.
+					}
+					else {
+						// change level
+						savelevelsAttained();
+						timer = 0;
+						levelMap.setLevel(++currentlevel);
+						character.init();
+						treasureSites.init();
+						keyRegister.init();
+						doorSites.init();	
+						monsterRegister.init();
+						bulletreg.init();
+						spawnSiteReg.init();
+						levelWon = false;
+						resume();
+					}					
 				}
+				if (renderer.fireButtonUp.contains(touchPoint.x, touchPoint.y)) summaryMenu.prevLetter();
+				if (renderer.fireButtonDown.contains(touchPoint.x, touchPoint.y)) summaryMenu.nextLetter();
+				if (renderer.fireButtonLeft.contains(touchPoint.x, touchPoint.y)) summaryMenu.prevCol();
+				if (renderer.fireButtonRight.contains(touchPoint.x, touchPoint.y)) summaryMenu.nextCol();
 			}
 			else
 			{
 				if(renderer.resumeButtonArea.contains(touchPoint.x, touchPoint.y))
 				{
-					//System.out.println("RESUME!");
-					resume();
+					renderer.resumeButton = renderer.resumeDown;
+					buttonClick.play();
 				}
 				if(renderer.quitButtonArea.contains(touchPoint.x, touchPoint.y))
 				{
-					//System.out.println("Game Finished");
-					resume();
-					worldEnd(false);
+					renderer.quitButton = renderer.quitDown;
+					buttonClick.play();
 				}
 			}
 		}
-		if (Constant.CHAR_CONTROL == Constant.JOYSTICK && renderer.touchPad.contains(touchPoint.x, touchPoint.y)) {
+		else if (Constant.CHAR_CONTROL == Constant.JOYSTICK && renderer.touchPad.contains(touchPoint.x, touchPoint.y)) {
 			touchpadMovement(touchPoint);
 			
 		} else {
@@ -388,6 +399,7 @@ public class WorldController implements InputProcessor
 			if (renderer.fireButtonRight.contains(touchPoint.x, touchPoint.y)) addbullet(Fire.right);
 			if(renderer.pauseButtonArea.contains(touchPoint.x, touchPoint.y))
 			{
+				buttonClick.play();
 				pause();
 			}
 		}
@@ -396,9 +408,9 @@ public class WorldController implements InputProcessor
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		touchPoint = renderer.unprojected(screenX, screenY);
 		if (Constant.CHAR_CONTROL == Constant.JOYSTICK) {
 			// check if the touch was on the joystick pad
-			touchPoint = renderer.unprojected(screenX, screenY);
 			if (renderer.touchPadLimit.contains(touchPoint.x, touchPoint.y)){
 				// stop all movement
 				character.stopHoziontialMove();
@@ -408,7 +420,20 @@ public class WorldController implements InputProcessor
 				
 				// reset the touchpad position and last drag position
 				renderer.touchPadCentre = new Vector2(0,0);
+				return true;
 			}
+			
+		}
+		if(paused == true && renderer.resumeButtonArea.contains(touchPoint.x, touchPoint.y))
+		{
+			renderer.resumeButton = renderer.resumeUp;
+			resume();
+			return true;
+		}
+		if(paused == true && renderer.quitButtonArea.contains(touchPoint.x, touchPoint.y))
+		{
+			renderer.quitButton = renderer.quitUp;
+			game.setScreen(new MainMenuScreen(game)); //return to Menu.
 			return true;
 		}
 		return false;
@@ -524,12 +549,9 @@ public class WorldController implements InputProcessor
 	
 	void worldEnd(boolean won)
 	{
-		//System.out.println("GAME OVER!");
 		end = true;
 		levelWon = won;
 		pause();
-		//System.out.print("points: " + Character.displayPoints());
-		//game.setScreen(new MainMenuScreen(game)); //return to Menu.
 	}
 	
 	void pause()

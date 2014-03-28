@@ -99,6 +99,7 @@ public class Character
 		bounds = new Rectangle(0,0, this.animation[0].getKeyFrame(0f).getRegionWidth()-1,this.animation[0].getKeyFrame(0f).getRegionHeight()-1);
 		imageSet = stood;
 		currentFrame = animation[imageSet].getKeyFrame(stateTime, true);
+		deaths = 0;
 
 		DyingSound = Gdx.audio.newSound(Gdx.files.internal("data/Dying.mp3"));
 	}
@@ -114,6 +115,7 @@ public class Character
 		// reset hit and dead state
 		hit = false;
 		isDead = false;
+		lives = 3;
 		
 		// reset image
 		imageSet = stood;

@@ -63,6 +63,10 @@ public class StatusBar
 			  return false;
 			  }
 	}
+	
+	public int getScore() {
+		return score;
+	}
 
 	public static void updatePoints(int points)
 	{
@@ -161,29 +165,5 @@ public class StatusBar
 		return transparency;
 	}
 	
-//	void updateScores()
-//	{
-//		String[] hsName;
-//		String[] hsScore;
-//		
-//		for(int i=0; i<10; i++)
-//		{
-//			hsName[i] = "AAA";
-//			hsScore[i] = "000000000";
-//		}
-//		
-//		FileHandle file = Gdx.files.local("HighScores.csv");
-//		if (Gdx.files.local("HighScores.csv").exists()) {
-//			String line = file.readString();
-//			StringTokenizer token = new StringTokenizer(line, ",");
-//						
-//			int i = 0;
-//			while(token.hasMoreTokens() && i < 10)
-//			{
-//				hsName[i] = token.nextToken();
-//				if(hsName[i].length()>3) hsName[i].substring(3);
-//				hsScore[i] = String.format("%09d", Integer.parseInt(token.nextToken()));
-//			}
-//		}
-//	}
+
 }

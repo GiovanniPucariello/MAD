@@ -1,6 +1,7 @@
 package com.crypt;
 
-import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -118,7 +119,7 @@ public class MainMenuScreen implements Screen
 		
 		TextButtonStyle styleLevelPick = new TextButtonStyle();
 		styleLevelPick.up = skin.getDrawable("levelSelectionUp");
-		styleLevelPick.down = skin.getDrawable("levelSelectionDown");
+		//styleLevelPick.down = skin.getDrawable("levelSelectionDown");
 				
 		Button buttonLevelPick = new Button(styleLevelPick);
 		y += 135;
@@ -127,7 +128,7 @@ public class MainMenuScreen implements Screen
 		
 		TextButtonStyle styleGamePick = new TextButtonStyle();
 		styleGamePick.up = skin.getDrawable("gameSelectionUp");
-		styleGamePick.down = skin.getDrawable("gameSelectionDown");
+		//styleGamePick.down = skin.getDrawable("gameSelectionDown");
 				
 		Button buttonGamePick = new Button(styleGamePick);
 		y += 135;
@@ -136,7 +137,7 @@ public class MainMenuScreen implements Screen
 		
 		TextButtonStyle styleEditor = new TextButtonStyle();
 		styleEditor.up = skin.getDrawable("LevelEditorUp");
-		styleEditor.down = skin.getDrawable("LevelEditorDown");
+		//styleEditor.down = skin.getDrawable("LevelEditorDown");
 				
 		Button buttonEditor = new Button(styleEditor);
 		buttonEditor.setX(x);
@@ -159,7 +160,7 @@ public class MainMenuScreen implements Screen
 		highScoreX = (parchwidth / 2) - (labelHighScores.getWidth()/ 2) -130;
 		highScoreY = parchheight - 190;
 		
-		buttonEditor.addListener(new InputListener() {
+		/*buttonEditor.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
 			{
 				return true;
@@ -197,7 +198,7 @@ public class MainMenuScreen implements Screen
 				buttonClick.play();
 				game.setScreen(new LevelSelectionScreen(game));
 			}
-		});
+		});*/
 		
 		buttonPlayOptions.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
@@ -242,13 +243,11 @@ public class MainMenuScreen implements Screen
 		
 		buttonClick = Gdx.audio.newSound(Gdx.files.internal("data/buttonClick.mp3"));
 				
-		//font = new BitmapFont(Gdx.files.internal("data/TahomaFont.fnt"), false);
 		font = new BitmapFont(Gdx.files.internal("data/Buxton.fnt"), false);
 		font.setColor(Color.BLACK);
 		
 		// load high scores data
 		loadHighScore();
-		hsScore[0] = "000000000";
 	}
 
 	@Override
@@ -290,14 +289,20 @@ public class MainMenuScreen implements Screen
 		FileHandle file = Gdx.files.local("HighScores.csv");
 		if (Gdx.files.local("HighScores.csv").exists()) {
 			String line = file.readString();
-			StringTokenizer token = new StringTokenizer(line, ",");
-						
+			
+			String[] temp = line.split(",",-1); 
+			
+			int buff =0;
 			int i = 0;
-			while(token.hasMoreTokens() && i < 10)
+			while(i< temp.length && i < 10)
 			{
-				hsName[i] = token.nextToken();
-				if(hsName[i].length()>3) hsName[i].substring(3);
-				hsScore[i] = String.format("%09d", Integer.parseInt(token.nextToken()));
+				hsName[i] = temp[buff];
+				if(hsName[i].length()>3) {
+					hsName[i] = hsName[i].substring(0,3);
+				}
+				hsScore[i] = String.format("%09d", Integer.parseInt(temp[buff+1]));
+				i++;
+				buff +=2;
 			}
 		}
 	}
